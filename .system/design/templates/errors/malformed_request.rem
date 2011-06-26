@@ -1,0 +1,11 @@
+<article><section>
+
+# Error: Malformed Request #
+
+Requests to this resource should be made in the format:
+
+~~~>
+&__URL__;
+<~~~
+
+</section></article>

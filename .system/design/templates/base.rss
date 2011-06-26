@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>
+<!-- =================================================================================================================== -->
+<atom:link href="&__DOMAIN__;&__CATEGORY__;rss" rel="self" type="application/rss+xml" />
+<title>camen design&__TITLE__;</title>
+<link>&__DOMAIN__;&__CATEGORY__;</link>
+<description>code is art</description>
+&__CATTAG__;
+<language>en-gb</language>
+<image>
+	<url>&__DOMAIN__;design/cameneye-ink(c)kroccamen.png</url>
+	<title>camen design&__TITLE__;</title>
+	<link>&__DOMAIN__;&__CATEGORY__;</link>
+</image>
+<pubDate>&__DATE__;</pubDate>
+<lastBuildDate>&__DATE__;</lastBuildDate>
+
+&__ITEMS__;
+	
+</channel></rss>

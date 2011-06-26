@@ -1,0 +1,218 @@
+RewriteEngine	on
+
+DirectorySlash	off			# personal preference, given my site nav--not recommended to copy
+DirectoryIndex	index.html
+
+# error messages:
+ErrorDocument 404 /404
+
+# do not mess with the subdomains
+# (I’ve named them with folders starting with “_”)
+RewriteRule ^_ - [L]
+
+# this ‘feature’ (MultiViews) drove me absolutely insane!
+# without this, Apache will give a 404 for a rewrite if a folder of the same name does not exist (e.g. “/blog/hello”)
+# <webmasterworld.com/apache/3808792.htm>
+Options -MultiViews +Indexes
+
+# allow you guys to see this file
+<Files .htaccess>
+	allow from all
+</Files>
+
+# no www. also, I don’t know why, but there seems to be incoming links using wap.*, m.* &c. for no reason (spambots?)
+RewriteCond %{HTTP_HOST} ^(?:www?|wap|m|mobile|macmini|fake)\.(.+)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# leave my google verification alone
+RewriteRule ^google.*\.html$ - [L]
+
+
+# additional filetypes
+# --------------------------------------------------------------------------------------------------------------------------
+AddType video/ogg		.ogv
+AddType audio/ogg		.oga .ogg
+AddType video/mp4		.mp4
+AddType video/webm		.webm
+
+AddType font/ttf		.ttf
+AddType font/otf		.otf
+AddType font/x-woff		.woff
+AddType image/svg+xml		.svg .svgz
+AddEncoding gzip .svgz
+
+AddType application/rss+xml	.rss
+AddType text/remarkable		.rem
+AddType text/plain		.do	# “to.do” files
+
+<IfModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/html text/plain text/css application/x-javascript text/javascript application/javascript application/json text/xml application/xml application/rss+xml
+	
+	<FilesMatch "\.(ttf|otf|svg)$">
+		SetOutputFilter DEFLATE
+	</FilesMatch>
+</IfModule>
+
+# force utf-8 for a number of file formats:
+AddDefaultCharset utf-8
+AddCharset utf-8 .rem .html .css .rss .xml .js .txt .do
+
+# caching
+# --------------------------------------------------------------------------------------------------------------------------
+FileETag MTime Size
+<IfModule mod_expires.c>
+	Header set cache-control: public
+	ExpiresActive on
+	ExpiresDefault "access plus 1 month"
+	ExpiresByType text/html			"access plus 1 hour"
+	ExpiresByType application/rss+xml	"access plus 1 hour"
+	ExpiresByType image/png			"access plus 1 month"
+	ExpiresByType image/jpg			"access plus 1 month"
+	ExpiresByType image/jpeg		"access plus 1 month"
+	ExpiresByType video/ogg			"access plus 1 month"
+	ExpiresByType audio/ogg			"access plus 1 month"
+	ExpiresByType video/mp4			"access plus 1 month"
+	ExpiresByType video/webm		"access plus 1 month"
+	ExpiresByType image/x-icon		"access plus 1 year"
+	ExpiresByType font/ttf			"access plus 1 year"
+	ExpiresByType image/svg+xml		"access plus 1 year"
+</IfModule>
+
+# # prevent 3G carriers and proxies from breaking my code with their incompetent compression methods
+# # (this currently 500s and stuff needs to be modified for the /design/ rewrite)
+# <Files ~ "\.(cs[sz]|rs[sz]|html5)$">
+# 	Header merge Cache-Control no-transform
+# </Files>
+
+
+
+# to seperate content / code webroot is pure content, and the site’s code / design is all within ‘/.system/’
+RewriteRule ^robots.txt$  /.system/robots.txt [NC,L]
+RewriteRule ^favicon.ico$ /.system/design/favicon.ico [NC,L]
+RewriteRule ^apple-touch-icon.png$ /.system/design/apple-touch-icon.png [L]
+RewriteRule ^sitemap.xml$ /.system/sitemap.xml [L]
+
+
+# mistakes: I make a lot of them, these are here to correct them. move along, nothing to see here…
+# ==========================================================================================================================
+# should not have used a period in the folder names for the old verisons of the site
+RewriteRule ^code/files/0\.(\d)(.*)$ /.system/archive/0_$1$2 [R=301,L]
+# for a brief period the RSS was mapped as "/rss/<category>" instead of "/<category>/rss"
+RewriteRule ^rss/([-a-z0-9]+)?$ /$1/rss [R=301,L]
+# chose a bad name for the remarkable folder that didn’t match the case of the article
+RewriteRule ^code/(?:files/)?ReMarkable/(.*)$ /code/remarkable/$1 [R=301,L]
+# that was stupid (naming an article the same as a category)
+RewriteRule ^([-a-z0-9]+/)?code-is-art$ /$1codeisart [R=301,L]
+# ==========================================================================================================================
+# legacy: corrections for how previous versions of the website worked, you can ignore this…
+# ==========================================================================================================================
+# I switched off auto directory completion to allow article-folders to work, but still consistently get 404s on these
+RewriteRule ^(design|quote|photo|blog|writing|code|art|link|poem|audio|web-dev|annoyances|inspiration|windows|gaming|gift|osnews|mac|c64|linux)$ /$1/ [R=301,L]
+# I consolidated some photos when I added support for multiple enclosures
+RewriteRule ^([-a-z0-9]+/)?birds-in-town-[12]$ /$1walk-the-walk [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?(?:jag-xj220-[12]|lotus-elise)$ /$1hayes_motor_museum [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?(?:dsc00611|dsc0064[12]|silver-lining)$ /$1snow_2008 [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?(?:dsc0080[148]|dsc00799)$ /$1worth_way [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?(?:dsc0082[068]|dsc00818|old-post-office)$ /$1snow_2009 [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?dsc100(?:32|23)$ /$1lilac_droplets [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?dsc0173[59]$ /$1ships_cat [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?dsc0142[12]$ /$1rainbow_road [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?dsc010(?:80|94)$ /$1very_orange [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?dsc01(?:2(?:09|19|40|74|9[59])|303)$ /$1steyning [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?(?:arundel_post-office|number_10|tweedledum_tweedledee|dsc009(?:66|43|32|26|1[94320]|0[731])|dsc008(?:94|8[76]))$ /$1around_arundel [R=301,L]
+RewriteRule ^([-a-z0-9]+/)?(?:ghettoe|photo-0026_e1|photo-0779e)$ /$1crwly [R=301,L]
+# ‘/php’ used to be the old code rewrite
+RewriteRule ^php$ /.system/ [L,R]
+# I changed the ‘tweet’ section to ‘quote’
+RewriteRule ^tweet/(.*)$ /quote/$1 [R=301,L]
+# links to the HTML used to be ‘.xhtml’, then ‘.html5’ files, now ‘.html’ (dropped Firefox 2, then pre-compression)
+RewriteRule ^(.*)\.(?:xhtml|html5)$ /$1.html [R=301,L]
+# support files for articles were held in a folder called 'files', but are now held in a folder with the same name as the
+# article. e.g. ‘/code/video_for_everybody’ is the article, and ‘/code/video_for_everybody/’ is the folder with images &c.
+RewriteRule ^([-a-z]+)/files/(.*)?$ /$1/$2 [R=301,L]
+# don’t have page numbers anymore
+RewriteRule ^([a-z0-9-]+/)?\d{1,2}$ /$1 [R=301,L]
+# redirect the old source code pages to the archive (v0.1)
+RewriteRule ^code/(code|content|database|shared)\.php /.system/archive/0_1/$1.php [R=301,L]
+# I’ve also moved the archive out of the normal article area and into system (avoid regex clashes)
+RewriteRule ^code/archive/(.*) /.system/archive/$1 [R=301,L]
+# tannerhelland.com used to be hosted here
+RewriteRule ^System/RSS/TannerHelland/(News|MusicReleases).xml$ http://www.tannerhelland.com/feed/ [R=301,NC,L]
+RewriteRule ^TannerHelland/.*$ http://tannerhelland.com/ [R=301,NC,L]
+# theraje.com was temporarily in a subfolder, now in a subdomain
+RewriteRule ^(?:theraje.php)$ http://theraje.camendesign.com [R=301,NC,L]
+# legacy v0.1 URL redirector
+RewriteCond %{QUERY_STRING} .+
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^ /.system/archive/legacy.php [L]
+# ==========================================================================================================================
+
+
+
+RewriteCond %{REQUEST_URI} ^/design/?$
+RewriteRule ^design/$ /.system/design/design.css [L]
+RewriteRule ^design/(.*)$ /.system/design/$1 [L]
+
+# give the compressed RSS file for the given directory
+# if the file exists in the cache use that, if not, pass to the PHP to generate
+RewriteCond %{REQUEST_URI} ^/([a-z0-9-]+/)?rss$
+RewriteCond %{DOCUMENT_ROOT}/.cache/%1feed.rss -F
+RewriteRule ^([a-z0-9-]+/)?rss$ /.cache/$1feed.rss [L]
+RewriteRule ^(?:([a-z0-9-]+)/)?rss$ /.system/rss.php?category=$1 [L]
+
+
+# view-source
+# --------------------------------------------------------------------------------------------------------------------------
+# you can view the source of all the PHP files on the site due to the distinction that no PHP files are called directly by
+# name in the site, instead all PHP is executed via some kind of RewriteRule. therefore we make it that any direct visit to
+# a PHP file shows in plain text, but rewrites execute the PHP instead
+RewriteCond %{THE_REQUEST} \.(htaccess|php|rem|sh)(\?.*)?\ HTTP
+RewriteRule ^.*(?<!view-source\.php)$ /.system/view-source.php?file=$0 [L]
+
+
+# article content
+# --------------------------------------------------------------------------------------------------------------------------
+# requesting a tag page (e.g. “/blog/”) - show the latest article
+# rewrite to “…/latest”, which will be checked against cache below, and processed accrodingly by article.php
+RewriteRule ^([a-z0-9-]+/)?$ /$1latest [PT]
+
+#editing an article?
+##RewriteRule ^((?:[a-z0-9-]+/)?[a-z0-9_-]+):edit$ /.system/edit.php?article=$1.rem [L]
+
+# requesting an article? (e.g. “/blog/hello”)
+# if the file is not in the cache (or we are viewing the HTML), run it through the PHP to generate the article
+RewriteCond %{REQUEST_URI} ^(/(?:[a-z0-9-]+/)?[a-z0-9_-]+)(\.html)?$
+RewriteCond %{THE_REQUEST} \b.*?\.html\b [OR]
+RewriteCond %{DOCUMENT_ROOT}/.cache%1.html !-F
+RewriteRule ^((?:[a-z0-9-]+/)?[a-z0-9_-]+)(\.html)?$ /.system/article.php?article=$1.rem [L]
+# …otherwise load the cache
+RewriteRule ^((?:[a-z0-9-]+/)?[a-z0-9_-]+)(\.html)?$ /.cache/$1.html [L]
+
+
+# directory browsing (under construction)
+# --------------------------------------------------------------------------------------------------------------------------
+RewriteRule ^(?:(\.(?!\.)|[^.])+\/)*$ /.system/dir.php?path=$0 [L]
+
+
+# stop hotlinking
+# --------------------------------------------------------------------------------------------------------------------------
+# outright block access to the following files
+# (too many people getting Video for Everybody wrong and hotlinking my files)
+# need to optimise this with env variables or something to reduce repetition
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(fever\..*|([a-z0-9]+\.)?(camendesign|osnews|google|yahoo|bloglines)((\.[a-z]+){1,2})?|.*/fever)/ [NC]
+RewriteRule \.(swf|og[agv]|mp4|m4v|ttf|ttz|svg|svz)$ - [F,L]
+
+# don’t get stuck in a loop
+RewriteRule ^\.cache/ - [L]
+
+# allowed domains
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(fever\..*|([a-z0-9]+\.)?(camendesign|osnews|google|yahoo|bloglines)((\.[a-z]+){1,2})?|.*/fever)/ [NC]
+RewriteCond %{REQUEST_URI} ^.*(?<!_preview)\.(jpe?g|png)$
+RewriteCond %{DOCUMENT_ROOT}/.cache%0 -F
+RewriteRule ^.*(?<!_preview)\.(jpe?g|png)$ /.cache/$0 [L]
+
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(fever\..*|([a-z0-9]+\.)?(camendesign|osnews|google|yahoo|bloglines)((\.[a-z]+){1,2})?|.*/fever)/ [NC]
+RewriteRule ^.*(?<!_preview)\.(jpe?g|png)$ /.system/hotlink.php?image=$0 [L]

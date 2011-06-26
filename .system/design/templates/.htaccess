@@ -1,0 +1,9 @@
+<Files "*.html">
+	ForceType text/plain
+</Files>
+<Files "*.xml">
+	ForceType text/plain
+</Files>
+<Files "*.rss">
+	ForceType text/plain
+</Files>

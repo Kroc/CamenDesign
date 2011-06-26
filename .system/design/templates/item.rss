@@ -1,0 +1,10 @@
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<item>
+<title>&__TITLE__;</title>
+<link>&__LINK__;</link>
+<guid isPermaLink="true">&__PERMALINK__;</guid>
+<pubDate>&__DATE__;</pubDate>
+<description>
+&__DESCRIPTION__;
+</description>
+&__CATEGORIES__;&__ENCLOSURE__;</item>

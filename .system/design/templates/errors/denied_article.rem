@@ -1,0 +1,9 @@
+<article><section>
+
+# Error: ‘Permission Denied’ Saving Article #
+
+The article ‘<&__PATH__; (/&__PATH__;.rem)>’ does not have a publish date and/or updated date but the file could not be saved to add these fields as PHP does not have write permissions for this file (after already failing to try change permissions itself).
+
+Please change the permissions on this file (or its parent folder) so that PHP can write to it.
+
+</section></article>

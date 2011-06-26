@@ -1,0 +1,8 @@
+<article><section>
+
+# Error: ‘Permission Denied’ Saving Cache #
+
+Could not save a file to the cache folder ‘&__PATH__;’. _
+Please change the permissions on this folder so that PHP can write to it.
+
+</section></article>

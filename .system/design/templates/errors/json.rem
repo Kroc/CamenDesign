@@ -1,0 +1,31 @@
+<article><section>
+
+# Error: Malformed {JSON} Header #
+
+The article header in ‘<&__PATH__; (/&__PATH__;.rem)>’ did not decode as {JSON}. _
+Each article should start with a header on the first line that looks like this:
+
+~~~>
+{	"date"		:	200806181021,
+	"updated"	:	200806181021,
+	"title"		:	"Hello.",
+	"licence"	:	"cc-by",
+	"tags"		:	["code-is-art", "web-dev"]
+}
+
+Content here…
+<~~~
+
+It is vital that there is at least one blank line between the {JSON} closure and the start of the content. _
+¬
+Try the following:
+
+•	Check for stray commas or unescaped speech marks _
+	({e.g.|for example,} ``"the "cat" sat on the mat"`` should be: ``"the \"cat\" sat on the mat"``)
+
+•	Tags must always be an array, even if there is only one item. _
+	For example, ``"tags" : "web-dev"`` is invalid, where as ``"tags" : ["web-dev"]`` is correct.
+
+•	Use <JSLint (//jslint.com/)> to validate the {JSON} header closure
+
+</section></article>

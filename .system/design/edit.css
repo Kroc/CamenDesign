@@ -1,0 +1,113 @@
+article					{padding-bottom: 340px;}
+
+/* gecko bug: just `form` doesn’t work for some odd reason... try it and see */
+form[method]				{display: block; position: fixed; height: 320px; width: 100%;
+					 bottom: 0; left: 0; right: 0; margin: 0; padding: 30px 0 0 0;
+					 -webkit-box-sizing: border-box;
+					    -moz-box-sizing: border-box;
+					         box-sizing: border-box;
+					 -moz-box-shadow: 0 -5px 15px rgba(0,0,0,.2); z-index: 1;
+					 background-color: #1d1d1d;}
+
+#scroll					{direction: rtl; width: 100%; height: 100%; padding-left: 5px; overflow: auto;
+					 text-align: left;}
+#content				{direction: ltr; width: 124ch; height: 100%; border: 0;
+					 -moz-resize: none; resize: none;
+					 border-right: 1px solid black; font: 12px/15px monospace; color: #ddd;
+					 background: transparent; cursor: text;
+					 /* Safari always displays monospace fonts smaller than specified, thus 1em!=1em
+					    the number below is supposed to be 125 chars */
+					 background-position: 73.3em 0;}
+
+
+/* === toolbar ========================================================================================================== */
+#toolbar				{position: absolute; top: 0; height: 30px; width: 100%; margin: 0; padding: 0 0 0;
+					 overflow: hidden; border: 0; border-top: 1px solid rgba(255,255,255,.5);
+					 outline: 1px solid rgba(0,0,0,.5); cursor: NS-resize;
+					 -moz-user-select: -moz-none; -webkit-user-select: none;
+					 background: #1d1d1d;}
+input[type=submit], button, label	{display: inline-block; height: 30px; margin: 0; padding: 0; border: 0;
+					 font: 11px "Lucida Grande", "Lucidia Sans Unicode", sans-serif; color: #888;
+					 text-indent: 30px; text-shadow: 1px 1px 2px black; cursor: pointer;
+					 background: none;}
+
+input[value="Preview"]			{float: left; background-position: 0 0;}
+fieldset>input[value="Commit"]		{background-position: 0 -60px;}
+
+/* password box and label text */
+label					{display: inline-block; vertical-align: top; line-height: 32px;}
+input[type=password]			{padding: 4px 8px; margin: 0 0 0 10px; height: 12px; color: white;
+					 border: 1px solid rgba(0,0,0,.5); border-bottom-color: rgba(255,255,255,.5);
+					 -moz-border-radius: 1em; -webkit-border-radius: 11px;
+					 -moz-box-shadow: 0 1px 5px rgba(0,0,0,.7) inset;
+					 background: none;}
+input[type=password]:focus		{-moz-box-shadow: 0 0 4px 1px #be6718, 0 1px 5px rgba(0,0,0,.7) inset;
+				 	 -webkit-box-shadow: 0 0 4px #be6718;}
+label>input[type=submit]		{position: absolute; height: 28px; margin: 0 0 0 -24px; padding: 2px;
+					 border: 0; background: none; color: white; cursor: pointer;}
+
+
+
+input[type=submit]:enabled:hover,
+ input[type=password]:enabled:focus,
+ label					{color: #be6718;}
+input[value="Preview"]:enabled:hover	{background-position: 0 -30px;}
+input[value="Commit"]:enabled:hover,
+ label					{background-position: 0 -90px;}
+
+button					{overflow: hidden; float: right; width: 30px;
+				 	 background-position: 0 -180px;}
+button+button				{background-position: 0 -120px;}
+#min					{/* min.png: */ background: url("data:image/png;base64,\
+					 iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAABwUlEQVR42u2WvUsCYRzH8zzz8rWsVIoIyd\
+					 5RqSlajEg9ehka+hcaG21rV1qk1KEpaHBxLlxCXFpNBDchkMC9CLu8vg/8nik4gucgiHvgw6Pf33P3eR7v\
+					 x+GIrut/giW2xJb4Bxg2QuKff1MXFUrAAZxAodlBOTCoC4glupEPTIMwCAI/GAOjNPspD9M6L6uJnFamm8\
+					 yANbAJEmCBRAEQAlGWU32V1ntExKNgolAo7Gua9q5jNJvNe2RJEANLIA52Wq1WjdXZunw+n2bXCYvBcqlU\
+					 Oh8Oh5qOUS6Xr5AdgD1wWKlUblnO6rlc7gzZIhgXecYy8IB5sA3BDRMMBoOPTCZzgew0m80WvjBYXiwWL5\
+					 FtgTngMaO5JsEKSDUajRqT9Hq9V1VVr98w2PdqtXqH+i79/AHeXCJyO3VuCMRdLtdRp9N5ZrJPDDbX6/UH\
+					 1NJgnbpaAXZRMe9uN3XrRiQSOen3+y9M2m63n5CpIEabc9FmbWa9ufjzngWJVCp13O12HxVFSdJJw8DNpV\
+					 xsltxB8iCIgCg13hSdVOavSwOx0MkV4AU+2ogT2LnUQCwsl0gk0yxxqYHY3E1YfwQssSX+3+JvxOK8TGwl\
+					 Lo0AAAAASUVORK5CYII=") no-repeat center center;}
+#min:enabled:hover			{/* mins.png: */ background: url("data:image/png;base64,\
+					 iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAABzUlEQVR42u2WS0sCURiGdWYcpxzvlxlKic\
+					 julBRY0QUjS6KL0EIqiDbRBAVFq1ZFPyCIqF0RFNGiRbvoJrVt3U9o0y8oggp7D3yzEkQ4QRAjPBx9v/E8\
+					 c/RFtBUKhT/BEltiS1wEHnZCMJ+XM+cVCsABnECh1UE5KDHnEAu0kQeEgQ4iwAsqgEyrl3KdrnMDmee0Em\
+					 1SBVpAJ0iAOhIFgAbiLKd5M12v8ohl4F/p84zlDf39YUkvHOVC18hSoA00gHYweJwL3rE5u26525Vh7+MW\
+					 g8a1fvdG3tC+2OZrA559ZONgGExspn0nLGdzI6muIqsHPp7vWAIqqAG9m2nvIRPcLuofyai8hcyYSbj27g\
+					 3tm+Xr/e4dZD0gBtTfKFcQNIGRvWzgjkku5sKvyZjz4GpBe2OvtzO+M8yH6OMPmOXikYvUXA20O0Xb5Ol0\
+					 8JnJ7he1T7buZv03mGVAK7VaASKv2Gy3i9raoati7nI+/MKkKNUTslEqmwYq6WbtHOIiuQqqQaIrKk+dz4\
+					 YeFcmWopPqwGVKi8SccgfJI6AWxKl4ITqpZP5clhBznVwBbuABKhVQNKUlxNxygUQSrYIpLVPMfxPWHwFL\
+					 bIn/t/gHeVaB1ii+CYoAAAAASUVORK5CYII=") no-repeat center center;}
+#max					{/* max.png: */ background: url("data:image/png;base64,\
+					 iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAACh0lEQVR42u2WT2iScRjH03dNXc5WLZtrVh\
+					 aLwFZp4chabViHEVmwS4ci9GIQCXruYBRC9A+RDt686KEO2q2L4CXCjoJaR5MlCZmIRFnz7fvA84v3EPI2\
+					 GTvkAx9ef3/e7+d9fd/HbYssy5vCUDwUb54YpWG04vOGi1k2AnRAT0ceazdGzFIWmcBuMEVHHusGlfeT6s\
+					 FOYAMnIpHIdTryeMegcirN3+6UpYfBYjwef7qGisVijzA+D2ZZPsrywcQsHaVQDvcEg8GHP1Ey6gfK5/Pd\
+					 x/wSOAS2g62UsW4xHSmEww6CRa/Xe7fT6XyTFdVqtTputzuM9QWwH4yvRy6EQjrOYWdcLtedZrP5VQhrtV\
+					 pbfK7X65+tVqsf++bBDDCCEZarF/NJRg6Zp9BqtboqRKVSadVoND6vVCqfxFy5XP5gMBiuYf9JYAFjQPoX\
+					 scQnWSiEworF4nshwF237Xb7PazddjqdD+irFmu5XO4N5q+CY8DMnaBVK9Zzf85RSD6ffyuC11B+v/8x5q\
+					 8AD62Hw+E4zYs9yWTyJeaXwRHuhFGgUSM28RvqyWazr2RFJRKJF5i/BI6DWe7jy5lM5rXy4qLR6DN6L4AV\
+					 bAOSGvEucDSVSj1RSguFwjvF1zjFLTYNHGAFz/vP4+h2u99DodAtuji1LUY1mU6nb/Z6vV8iqNFofDSbzS\
+					 sssfBd6IAR7AWnHA7HjXa73aT93ONfAoHAaaxNqBWbwD6WLIGL4CywC6n4w8CBQj4HzoELYIHH06K11L5c\
+					 Eyw5AGxghh/BmLI/RevxxUzyPhtf+B5gUvszSiXxnRgokDFwgCSkjJBLvK48R085attJGaZV0ucZ9T1n+D\
+					 /XUPz/in8Dfs4eNWx5+LsAAAAASUVORK5CYII=") no-repeat center center;}
+#max:enabled:hover			{/* maxs.png: */ background: url("data:image/png;base64,\
+					 iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAACk0lEQVR42u2Wy2sTURSHk8xkkkySyWOSTF\
+					 ofNZWmgRqj1FIkfYUoRdvio5iKxJbUtoqiiy7c1I3WjWhVkO4U7Ep8IBYqVCruRPAv0K1QwYUKRURRib8L\
+					 5+AsJIwNpQsz8DEz5957vnmcM4mtXC6vCzVxTbx+Ymx2wsHHay4mmQxcwE17WcTXRMxSEmkgCuK01yhelb\
+					 yS1A3CIAF2DLd5i2JP56Fq5WKz/+1OSZoEPeey/utLE8av01n/VZx3gyaSKySvSsxSBYQoef5wi+fK0rjx\
+					 48XJeHlxzPi+v9k9jXgObAUB4AT21Yq5ep2UrBH0dDQoF56WjK9CyiyUjC/pmDyJ8U7QAPyrkbOQpX5Klk\
+					 1FnWefjEQ/s/B+MbLCx4+KsQ9RVRrFvHawEfiATHLrYlrkoyTtIum9Y5FlFt0p6MseyTY7V4i859jdochb\
+					 RbIdxfxWUAdUIP2LWAIqLW4VyW4f0d+wYL4UW2kMyxcxdqZZly+LR81jM/2hl4gfBNtBjDrBYVXspv5Miy\
+					 Q3B8KvOLGo5L6k6xriB0BejA9l1FsiznPOdwceIr4PpKgTFGC3ItaoQvPTvcF5cyFNdgUeIN4HMqCJ+njg\
+					 Um9o0XxxY22+G6IuwCbgBZIVsQ62TeW0GbN09pD+2vQY49Ri9WAnGJwr/Hkdz8bj3woZ9RRdnKUWE1tkKu\
+					 8feT5h/OREj4ej7wKKbZAkdXQXLirADWBXUpeOL4wan3jN4gnjY3/KsxtjQatiDWwmSQ7sBR2ghaX8w0AJ\
+					 WZ4GXWAP6KTzem4tq8UVJMkWkKC20oFq6k9z63lBhOYl6MINoPFn1Go7OYEHeAkPJZBYSrBconHzGjdwWm\
+					 0nczKHmQrvqOKa2n+umvj/Ff8G3AulTIoGml0AAAAASUVORK5CYII=") no-repeat center center;}
+
+#max:disabled+#min:enabled		{margin-right: 10px;}
+
+input:focus, button:focus,
+ textarea:focus				{outline: 0;}
+input:disabled, button:disabled		{opacity: 0.25; cursor: not-allowed;}
+
