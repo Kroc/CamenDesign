@@ -1,0 +1,3 @@
+[submodule ".system/remarkable"]
+	path = .system/remarkable
+	url = git://github.com/Kroc/ReMarkable.git
