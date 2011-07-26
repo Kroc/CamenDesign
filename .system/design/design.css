@@ -906,6 +906,9 @@ article>header+blockquote	{/* quote section of the site uses large blackquotes *
 				 font-size: 28px; line-height: 38px; text-align: left;}
 article>header+blockquote>cite	{font-size: 18px; line-height: 19px;}
 
+/* blockquotes within blockquotes in the background area! */
+article>blockquote blockquote	{color: #431; text-shadow: #b61 0 -1px 0, rgba(255,255,255,.2) 0 1px 0;}
+
 /* content after a large blockquote in quote section of site is sized to fit the blockquote */
 article>header+blockquote~*	{margin-left: 40px; margin-right: 40px;}
 
