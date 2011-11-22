@@ -153,6 +153,9 @@ RewriteCond %{REQUEST_URI} ^/design/?$
 RewriteRule ^design/$ /.system/design/design.css [L]
 RewriteRule ^design/(.*)$ /.system/design/$1 [L]
 
+## Temporary hijack the RSS feeds of other categories to point toward the main feed until the $2K has been raised for Clint
+##RewriteRule ^[a-z0-9-]+/rss$ /rss [R=302,L]
+
 # give the compressed RSS file for the given directory
 # if the file exists in the cache use that, if not, pass to the PHP to generate
 RewriteCond %{REQUEST_URI} ^/([a-z0-9-]+/)?rss$
@@ -172,6 +175,11 @@ RewriteRule ^.*(?<!view-source\.php)$ /.system/view-source.php?file=$0 [L]
 
 # article content
 # --------------------------------------------------------------------------------------------------------------------------
+## Temporary hijack whilst I’m away on holiday
+##RewriteCond %{REQUEST_URI} ^/(?:[a-z0-9-]+/)?[a-z0-9_-]+(\.html)?$
+##RewriteCond %{REQUEST_URI} ^/(?:[a-z0-9-]+/)?(?!help_clint|quantumsandbox_1|kroc_writes|tour_de_england)[a-z0-9_-]+(\.html)?$
+##RewriteRule ^(?:[a-z0-9-]+/)?[a-z0-9_-]+(\.html)?$ /help_clint$1 [R=302,L]
+
 # requesting a tag page (e.g. “/blog/”) - show the latest article
 # rewrite to “…/latest”, which will be checked against cache below, and processed accrodingly by article.php
 RewriteRule ^([a-z0-9-]+/)?$ /$1latest [PT]

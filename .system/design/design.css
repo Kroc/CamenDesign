@@ -191,6 +191,8 @@ article>header+figure>figcaption:first-child:not(:empty)
 article>header+figure>figcaption:last-child:not(:empty)
 				{margin: 19px 0 0 0;}
 
+li>figure:last-child		{margin-bottom: 19px !important;}
+
 /* when using more than one section, space between them */
 article>section:not(:last-child){margin-bottom: 20px;}
 
