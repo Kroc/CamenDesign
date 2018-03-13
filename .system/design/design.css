@@ -10,7 +10,7 @@
    a grid is used throughout, the site is 980px wide divided in 20px wide blocks. every line is 19px or a multiple thereof
    19px is used because it also happens to be 5mm on a standard printout, meaning you can print this site on lined paper!
    
-   kroccamen@gmail.com
+   kroc@camendesign.com
    ---------------------------------------------------------------------------------------------------------------------- */
 header, nav, footer, section,	/* blockify some HTML5 elements for browsers without a specific HTML5 parser */
  aside, article, figure,
