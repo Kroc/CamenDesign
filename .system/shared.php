@@ -2,7 +2,7 @@
 /* ====================================================================================================================== */
 //PHP 5.3 issues a warning if the timezone is not set when using date-related commands
 date_default_timezone_set ('Europe/London');
-error_reporting (-1);
+error_reporting (0);
 
 //“ReMarkable” is my Markdown-like syntax for writing in plain text and converting to HTML
 //see the ReMarkable folder for documentation, or the website <camendesign.com/code/remarkable>
@@ -156,7 +156,7 @@ function indexSite () {
 							."\"" : '')
 				.(@$meta['licence']   ? ",\n\t\"licence\"\t:\t\"${meta['licence']}\"" : '')
 				.(@$meta['tags']      ? ",\n\t\"tags\"\t\t:\t[\"".implode ('", "',$meta['tags'])."\"]" : '')
-				.(@$meta['enclosure'] ? ",\n\t\"enclosure\"\t\t:\t[\""
+				.(@$meta['enclosure'] ? ",\n\t\"enclosure\"\t:\t[\""
 							.implode ('", "',$meta['enclosure'])."\"]" : '')
 				.(@$meta['url']       ? ",\n\t\"url\"\t\t:\t\"${meta['url']}\"" : '')
 				.(@$meta['draft']     ? ",\n\t\"draft\"\t\t:\t${meta['draft']}\n" : "\n")
@@ -211,11 +211,6 @@ function indexSite () {
 			template_tag (template_load ('base.xml'), 'URLS', $xml), LOCK_EX
 		) or errorPage (
 			'denied_cache.rem', 'Error: Permission Denied', array ('PATH' => APP_CACHE)
-		);
-		//ping Google with the update
-		if ($_SERVER['SERVER_ADDR'] != '127.0.0.1') get_headers (
-			"http://www.google.com/webmasters/tools/ping?sitemap=".
-			urlencode ('http://'.APP_HOST.'/sitemap.xml')
 		);
 	};
 }

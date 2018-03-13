@@ -1,6 +1,13 @@
+ServerSignature   Off
+
+# force utf-8 for a number of file formats:
+AddDefaultCharset utf-8
+AddCharset utf-8 .rem .html .css .rss .xml .js .txt .do
+
 RewriteEngine	on
 
-DirectorySlash	off			# personal preference, given my site nav--not recommended to copy
+# personal preference, given my site nav--not recommended to copy
+DirectorySlash	off
 DirectoryIndex	index.html
 
 # error messages:
@@ -21,7 +28,7 @@ Options -MultiViews +Indexes
 </Files>
 
 # no www. also, I don’t know why, but there seems to be incoming links using wap.*, m.* &c. for no reason (spambots?)
-RewriteCond %{HTTP_HOST} ^(?:www?|wap|m|mobile|macmini|fake)\.(.+)$ [NC]
+RewriteCond %{HTTP_HOST} ^(?:www?|wap|m|mobile)\.(.+)$ [NC]
 RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
 
 # leave my google verification alone
@@ -43,7 +50,8 @@ AddEncoding gzip .svgz
 
 AddType application/rss+xml	.rss
 AddType text/remarkable		.rem
-AddType text/plain		.do	# “to.do” files
+# “to.do” files
+AddType text/plain		.do
 
 <IfModule mod_deflate.c>
 	AddOutputFilterByType DEFLATE text/html text/plain text/css application/x-javascript text/javascript application/javascript application/json text/xml application/xml application/rss+xml
@@ -52,10 +60,6 @@ AddType text/plain		.do	# “to.do” files
 		SetOutputFilter DEFLATE
 	</FilesMatch>
 </IfModule>
-
-# force utf-8 for a number of file formats:
-AddDefaultCharset utf-8
-AddCharset utf-8 .rem .html .css .rss .xml .js .txt .do
 
 # caching
 # --------------------------------------------------------------------------------------------------------------------------
@@ -175,11 +179,6 @@ RewriteRule ^.*(?<!view-source\.php)$ /.system/view-source.php?file=$0 [L]
 
 # article content
 # --------------------------------------------------------------------------------------------------------------------------
-## Temporary hijack whilst I’m away on holiday
-##RewriteCond %{REQUEST_URI} ^/(?:[a-z0-9-]+/)?[a-z0-9_-]+(\.html)?$
-##RewriteCond %{REQUEST_URI} ^/(?:[a-z0-9-]+/)?(?!help_clint|quantumsandbox_1|kroc_writes|tour_de_england)[a-z0-9_-]+(\.html)?$
-##RewriteRule ^(?:[a-z0-9-]+/)?[a-z0-9_-]+(\.html)?$ /help_clint$1 [R=302,L]
-
 # requesting a tag page (e.g. “/blog/”) - show the latest article
 # rewrite to “…/latest”, which will be checked against cache below, and processed accrodingly by article.php
 RewriteRule ^([a-z0-9-]+/)?$ /$1latest [PT]
@@ -197,7 +196,7 @@ RewriteRule ^((?:[a-z0-9-]+/)?[a-z0-9_-]+)(\.html)?$ /.system/article.php?articl
 RewriteRule ^((?:[a-z0-9-]+/)?[a-z0-9_-]+)(\.html)?$ /.cache/$1.html [L]
 
 
-# directory browsing (under construction)
+# directory browsing
 # --------------------------------------------------------------------------------------------------------------------------
 RewriteRule ^(?:(\.(?!\.)|[^.])+\/)*$ /.system/dir.php?path=$0 [L]
 

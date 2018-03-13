@@ -947,7 +947,7 @@ section>h1+pre			{border-top: none; margin-top: -36px; padding-top: 19px; margin
 section>pre:last-child		{border-bottom: 1px solid #eee; margin-bottom: -40px; padding-bottom: 39px;}
 
 /* block images in articles */
-video, iframe,
+video, *:not(figure)>iframe,
  section>img:not([width="640"]),
       li>img:not([width="640"]),
       dd>img:not([width="600"])	{border-color: white; background-color: #eee;
