@@ -462,7 +462,7 @@ function remarkable (
         //     Use {RAID} for redundancy.   (without title)
         //
         '/\{([^|}]+)(?:\|([^}]+))?\}/' => function($m){
-            return "<abbr".($m[2] ? " title=\"{$m[2]}\"" : '').">{$m[1]}</abbr>";
+            return "<abbr".(@$m[2] ? " title=\"{$m[2]}\"" : '').">{$m[1]}</abbr>";
         },
         
     ), $source_text);
@@ -593,10 +593,10 @@ function remarkable (
         //
         "/(?:(?<=(?<!<[uo]l>)(\\n\\n)))?^{$bullet}((?:\\t+.*(\\n))+|(?:\\t+.*(?:\\n|(\\n\\n)))+)(?={$bullet}|\\n<\/[uo]l>)/mu" => function($m){
             return 
-                '<li'.(isset($m[3]) ? " id=\"{$m[3]}\"" : '').'>'
-                .$m[1].$m[5].$m[6]
+                '<li'.(strlen($m[3]) ? " id=\"{$m[3]}\"" : '').'>'
+                .$m[1].$m[5].@$m[6]
                 .preg_replace("/^\\t/m", '', trim($m[4]))
-                .$m[1].$m[5].$m[6]
+                .$m[1].$m[5].@$m[6]
                 ."</li>\n\n";
         },
 
@@ -616,7 +616,7 @@ function remarkable (
         '/^:: (?:\(#([0-9a-z_-]+)\))?(.*)\n{0,2}((?:\t+.*\n)+|(?:\t+.*(?:\n|(\n)\n)?)+)?\n(?=\n::|<\/dl>)/m' => function($m){
             return
                 '<dt'.(isset($m[1]) ? " id=\"{$m[1]}\"" : '').">{$m[2]}</dt>\n\n"
-                .(isset($m[3])
+                .(isset($m[3]) && (isset($m[4]))
                     ?   "<dd>\n{$m[4]}".preg_replace("/^\\t/m", '', $m[3])."{$m[4]}\n</dd>\n\n"
                     :   ''
                 );
@@ -696,7 +696,7 @@ function remarkable (
         // the “li”, “dd” and not-“p” conditions contain a paragraph of text that has to be
         // word-wrapped. this text is stored in the regex named capture group “p” -> `$m['p']`.
         // if no match is made `(!$m)` then the whole chunk is a paragraph to be wrapped
-        $p = rtrim (empty($m) ? $chunk : (string) $m['p']);
+        $p = rtrim (empty($m) ? $chunk : (string) @$m['p']);
         
         // as explained above, word-wrap these conditions:
         if (($tag == 'li' || $tag == 'dd' || !$m) && $margin>0) {
@@ -793,7 +793,7 @@ function remarkable (
     // apply tab output preference
     if (
         $options && (REMARKABLE_TABSPACE_2 || REMARKABLE_TABSPACE_4)
-    ) $source_text = preg_replace_callback ('/^(\t+)/me', function($m){
+    ) $source_text = preg_replace_callback ('/^(\t+)/m', function($m) use ($options){
         //8, 4, or 2 spaces?
         return str_repeat ((
             !($options xor (REMARKABLE_TABSPACE_2 || REMARKABLE_TABSPACE_4))
