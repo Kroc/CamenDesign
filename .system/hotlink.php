@@ -1,12 +1,17 @@
-<?php //where we watermark hotlinked images
-/* ====================================================================================================================== */
+<?php
+//==============================================================================
+// camen design © copyright (c) Kroc Camen 2008-2019, BSD 2-clause
+// (see LICENSE.TXT). bugs / suggestions → kroc@camendesign.com
+
+// hotlink.php : where we watermark hotlinked images
+
 include "shared.php";
 
 /* ============================================================================================================ input === */
 
 //“hotlink.php?image=path/to/image.png”
 $requested = (preg_match ('/^(\.(?!\.)|[-a-z0-9_\/])+\.(jpe?g|png)$/i', @$_GET['image'], $_) ? $_[0] : false) or errorPage (
-	'malformed_request.rem', 'Error: Malformed Request', array ('URL' => '?image=path/to/image.png')
+	'malformed_request.rem', 'Error: Malformed Request', ['URL' => '?image=path/to/image.png']
 );
 
 //does the requested file even exist?
@@ -39,14 +44,14 @@ imagefilter ($buffer, IMG_FILTER_CONTRAST,   50);
 imagefilter ($buffer, IMG_FILTER_BRIGHTNESS, 50);
 
 //determine which text will fit on the image
-$text = array (
+$text = [
 	APP_HOST,
 	'do not hotlink'
-);
-$widths = array (
+];
+$widths = [
 	25 + (imagefontwidth (3) * strlen ($text[0])),
 	25 + (imagefontwidth (1) * strlen ($text[1]))
-);
+];
 
 //write on the text shadow
 if ($info[0] > $widths[0]) imagestring ($buffer, 3, $info[0]-$widths[0], 15, $text[0], 0x000000);
