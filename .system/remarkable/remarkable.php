@@ -323,8 +323,7 @@ function remarkable (
                         (isset($m[8][0]) ? " title={$m[8][0]}" : '').
                     '>'.
                         // link text: either the description, or the friendly URL
-                        // hey look -- it's a NULL-coalescing operator!
-                        ($m[1][0] ?? $m[5][0]).
+                        (strlen($m[1][0]) ? $m[1][0] : $m[5][0]).
                     '</a>',
                     
                 $m[0][1], strlen ($m[0][0]));
@@ -616,8 +615,8 @@ function remarkable (
         '/^:: (?:\(#([0-9a-z_-]+)\))?(.*)\n{0,2}((?:\t+.*\n)+|(?:\t+.*(?:\n|(\n)\n)?)+)?\n(?=\n::|<\/dl>)/m' => function($m){
             return
                 '<dt'.(isset($m[1]) ? " id=\"{$m[1]}\"" : '').">{$m[2]}</dt>\n\n"
-                .(isset($m[3]) && (isset($m[4]))
-                    ?   "<dd>\n{$m[4]}".preg_replace("/^\\t/m", '', $m[3])."{$m[4]}\n</dd>\n\n"
+                .(isset($m[3])
+                    ?   "<dd>\n".@$m[4].preg_replace("/^\\t/m", '', $m[3]).@$m[4]."\n</dd>\n\n"
                     :   ''
                 );
         },
