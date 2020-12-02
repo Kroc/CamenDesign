@@ -170,6 +170,19 @@ section>h1+ol~h2[id]:before	{counter-increment: h2; content: counter(h2) ". ";}
 section>h1+ol~h3[id]:before	{counter-increment: h3; content: counter(h2) "." counter(h3) ". ";}
 
 
+/* --- tables ----------------------------------------------------------------------------------------------------------- */
+/* added in 2019, this is very, very untested */
+
+table				{margin: 0 0 19px 0; padding: 0; border-collapse: collapse;}
+tr				{margin: 0; padding: 0;}
+th, td				{margin: 0; padding: 9px 10px 10px;
+				 vertical-align: top; line-height: 19px;}
+/*
+tr>:first-child			{padding-left: 20px;}
+tr>:last-child			{padding-right: 20px;}
+*/
+
+
 /* === white space ====================================================================================================== */
 /* some typographical / vertical space adjustments for prettiness */
 
@@ -305,7 +318,8 @@ a[type$="/plain"]:before	{/* txt16.png: */background: url("data:image/png;base64
 				 2SwENjFFUUSpDWBb1tc7eAIgJBLlQokGtgAAAABJRU5ErkJggg==") no-repeat 3px center;}
 a[type$="/png"]:before,
  a[type$="/jpeg"]:before,
- a[type$="/gif"]:before		{/* png16.png: */ background: url("data:image/png;base64,\
+ a[type$="/gif"]:before,
+ a[type$="/bmp"]:before		{/* png16.png: */ background: url("data:image/png;base64,\
 				 iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAMAAABcOc2zAAAA2FBMVEUAODcAOTgAPTwDZW09dHQ/dXRCd3ZEeHhIfH\
 				 tLgIBOg4NPhIRSh4dUiYlWjI5WjpQ8mf49mfw8mf70+/3l8/2bx+iUweVChL33/P7g7/za7PzZ6/y83//B3vy+3v6y\
 				 1fihyuzx+f3v+PyOveCGuN5+s9p1rNhyqdZinc5bl8pPjsNEhb1Chb3n9PwAY2zT6Pz9/v/D3v7C3v3j8f1nodH7/v\
@@ -960,6 +974,15 @@ figure img			{/*outline: 1px inset rgba(255,255,255,.6); outline-offset: -1px;*/
 section figure			{background: white;}
 
 figure audio			{width: 100%; margin-top: 8px;}
+
+/* === desktop : tables ================================================================================================= */
+/* added in 2019, this is very, very untested */
+
+section table>tbody>tr:nth-child(odd)
+				{background-color: #ccd;}
+
+section table>thead>tr>th	{border-bottom: 1px solid #666; padding-bottom: 9px;}
+section table>tfoot>tr>th	{border-top: 1px solid #666; padding-top: 8px;}
 
 /* === desktop : fixed-footer =========================================================================================== */
 body>footer			{/* account for the header being fixed to the bottom of the window */

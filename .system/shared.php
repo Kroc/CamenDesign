@@ -65,6 +65,7 @@ function mimeType (string $extension): string {
         case 'gif':                 return 'image/gif';                 break;
         case 'jpg': case 'jpeg':    return 'image/jpeg';                break;
         case 'png':                 return 'image/png';                 break;
+        case 'bmp':                 return 'image/bmp';                 break;
         // code
         case 'asp':                 return 'text/asp';                  break;
         case 'css':                 return 'text/css';                  break;
