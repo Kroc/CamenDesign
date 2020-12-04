@@ -1,2 +1,11 @@
-*
-/.system/sitemap.xml
+# ignore anything beginning with "__"
+# (used to hide stuff from the repository)
+__*
+**/__*
+
+# include the "content" folder, but not any of its contents!
+# the source documents for the blog goes there
+content/**
+# include the "output" folder, but not any of its contents!
+# the generated website (for upload) goes there
+output/**

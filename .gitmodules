@@ -1,0 +1,6 @@
+[submodule "lib\\domtemplate"]
+	path = lib\\domtemplate
+	url = https://github.com/Kroc/DOMTemplate.git
+[submodule "lib\\remarkable"]
+	path = lib\\remarkable
+	url = https://github.com/Kroc/ReMarkable.git
