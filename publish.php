@@ -67,9 +67,10 @@ SQL
 
 // we're going to use this SQL statement a lot,
 // so compile it for fast re-use
-$db_insert = $db->prepare (
+$sql_insert_article = $db->prepare (
 	'INSERT INTO "article" VALUES '.
-	'(:name, :date, :updated, :title, :url, :licence, :type, :tags, :files, :html);'
+	'(:name, :date, :updated, :title, :url, '.
+	 ':licence, :type, :tags, :files, :html);'
 );
 
 // scan all articles:
@@ -84,23 +85,35 @@ $types = array_filter (
 $tags = array ();
 
 // get each article in each content-type folder:
-foreach ($types as $type) foreach (preg_grep ('/\.rem$/', scandir ($type)) as $file_name) {
+foreach ($types as $type) foreach (
+	preg_grep ('/\.rem$/', scandir ($type)) as $file_name
+) {
 	// read in the article
 	$file_path = $type.DIRECTORY_SEPARATOR.$file_name;
-	$rem = trim (preg_replace ('/\r\n?/', "\n", @file_get_contents ($file_path)));
+	$rem = trim (preg_replace (
+		'/\r\n?/', "\n",
+		@file_get_contents ($file_path)
+	));
+
 	// split the article into the meta data and the article-text
 	list ($meta, $content) = explode ("\n\n", $rem, 2);
 	// if the meta data is not present, error
 	if ($meta[0] != '{') die ("meta data in file $file_path is missing");
 	// the header is a JSON object containing the
 	// meta-information (date, tags, enclosure &c.)
-	if (!$meta = json_decode ($meta, true)) die ("meta data in $file_path is malformed");
+	// TODO: I hate typing JSON, so we're going to replace that
+	// 		 with something INI-like
+	if (!$meta = json_decode ($meta, true)) die (
+		"meta data in $file_path is malformed"
+	);
 	
 	// if the article is a draft, ignore it
 	if (@$meta['draft']) continue;
 	
 	// index the tags on the articles
-	if (isset ($meta['tags'])) foreach ($meta['tags'] as $tag) if (!in_array ($tag, $tags)) $tags[] = $tag;
+	if (isset ($meta['tags'])) foreach ($meta['tags'] as $tag) {
+		if (!in_array ($tag, $tags)) $tags[] = $tag;
+	}
 	
 	// update article meta data:
 	// --------------------------------------------------------------------------
@@ -109,16 +122,22 @@ foreach ($types as $type) foreach (preg_grep ('/\.rem$/', scandir ($type)) as $f
 	// date, and the publish-date will be added automatically at publish time
 	$modified = false;
 	// if the file has no date: it's new -- give it a date
-	if (!isset ($meta['date']))    {$meta['date']    = date ('YmdHi'); $modified = true;}
+	if (!isset ($meta['date'])){
+		$meta['date'] = date ('YmdHi'); $modified = true;
+	}
 	// if the file has no updated meta, add it.
 	// the entry will be pushed to the top of the RSS feed
-	if (!isset ($meta['updated'])) {$meta['updated'] = date ('YmdHi'); $modified = true;}
+	if (!isset ($meta['updated'])){
+		$meta['updated'] = date ('YmdHi'); $modified = true;
+	}
 	// save the file if the date/updated fields have been changed:
 	// (of course, I could have just used `json_encode` here,
 	//  but then it wouldn't be tidy)
 	if ($modified) {
 		// what if we can't save to disk?
-		if (!is_writable ("$file_path")) @chmod ("$file_path", 0444) or die ("Unable to save $file_path");
+		if (!is_writable ("$file_path")) @chmod ("$file_path", 0444) or die (
+			"Unable to save $file_path"
+		);
 		file_put_contents ("$file_path",
 			"{\t\"date\"\t\t:\t${meta['date']},\n"
 			."\t\"updated\"\t:\t${meta['updated']}"
@@ -138,7 +157,7 @@ foreach ($types as $type) foreach (preg_grep ('/\.rem$/', scandir ($type)) as $f
 	
 	// add the article to the database:
 	//--------------------------------------------------------------------------
-	$db_insert->execute (array (
+	$sql_insert_article->execute (array (
 		':name'		=> pathinfo ($file_name, PATHINFO_FILENAME),
 		':date'		=> $meta['date'],
 		':updated'	=> $meta['updated'],
@@ -150,7 +169,7 @@ foreach ($types as $type) foreach (preg_grep ('/\.rem$/', scandir ($type)) as $f
 		'licence'	=> @$meta['licence'],
 		'type'		=> $type,
 		'tags'		=> @$meta['tags']      ? '|'.implode ('|', $meta['tags']).'|' : '',
-		'enclosures'	=> @$meta['enclosure'] ? implode ('|', $meta['enclosure']) : '',
+		'files'		=> @$meta['enclosure'] ? implode ('|', $meta['enclosure']) : '',
 		'html'		=> // run the article through remarkable
 				   remarkable (str_replace ('&__HREF__;',
 					$type.'/'.pathinfo ($file_name, PATHINFO_FILENAME), $content
