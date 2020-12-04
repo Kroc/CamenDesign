@@ -43,9 +43,6 @@ include 'lib/domtemplate/domtemplate.php';
 //------------------------------------------------------------------------------
 echo "GENERATING DATABASE: "; ob_flush (); flush ();
 
-@mkdir ('cache', 0444);
-// switch to the cache directory where the database will reside
-chdir ('cache');
 // delete any old database
 @unlink ('db.sqlite');
 // create and connect to the database
@@ -59,11 +56,11 @@ $db = new database ('db.sqlite', <<<'SQL'
 		"licence"	TEXT,
 		"type"		TEXT,
 		"tags"		TEXT,
-		"enclosures"	TEXT,
+		"files"		TEXT,
 		"html"		TEXT
 	);
 	CREATE TABLE "tag" (
-		"name"	TEXT	PRIMARY KEY
+		"name"		TEXT	PRIMARY KEY
 	);
 SQL
 );
@@ -72,12 +69,12 @@ SQL
 // so compile it for fast re-use
 $db_insert = $db->prepare (
 	'INSERT INTO "article" VALUES '.
-	'(:name, :date, :updated, :title, :url, :licence, :type, :tags, :enclosures, :html);'
+	'(:name, :date, :updated, :title, :url, :licence, :type, :tags, :files, :html);'
 );
 
 // scan all articles:
 //------------------------------------------------------------------------------
-chdir ('../content');
+chdir ('content');
 
 // get a list of the main site article types (e.g. "blog", "code", "art" &c.)
 $types = array_filter (
@@ -179,7 +176,7 @@ foreach (array_merge (array (''), $types, $tags) as $category) {
 	echo "PROCESSING ARTICLES: $category\n"; ob_flush (); flush ();
 	
 	// ensure the cache sub-folder exists for a cateogry
-	if ($category && !file_exists ("cache/$category")) mkdir ("cache/$category", 0444);
+	if ($category && !file_exists ("output/$category")) mkdir ("output/$category", 0444);
 	
 	// select the type of SQL query, it'll vary
 	// between types, tags and root (all articles)
@@ -211,7 +208,7 @@ foreach (array_merge (array (''), $types, $tags) as $category) {
 		
 		$template->setValue ('/html/article', $article[9], true);
 		// write the file
-		file_put_contents ('cache/'.($category ? "$category/" : '').$article[0].'.html', $template);
+		file_put_contents ('output/'.($category ? "$category/" : '').$article[0].'.html', $template);
 		
 		// generate the HTML code view:
 		//----------------------------------------------------------------------
@@ -224,13 +221,13 @@ foreach (array_merge (array (''), $types, $tags) as $category) {
 	// [4]: generate the category index
 	//==========================================================================
 	$template = new DOMTemplate (file_get_contents ('theme/templates/index.html'));
-	file_put_contents ('cache/'.($category ? "$category/" : '').'index.html', $template);
+	file_put_contents ('output/'.($category ? "$category/" : '').'index.html', $template);
 	
 	//==========================================================================
 	// [5]: generate the category RSS feed
 	//==========================================================================
 	$template = new DOMTemplate (file_get_contents ('theme/templates/index.xml'));
-	file_put_contents ('cache/'.($category ? "$category/" : '').'index.xml', $template);
+	file_put_contents ('output/'.($category ? "$category/" : '').'index.xml', $template);
 }
 
 ### generate the directory listing
@@ -241,7 +238,7 @@ foreach (array_merge (array (''), $types, $tags) as $category) {
 // [x]: generate the sitemap
 //==============================================================================
 $template = new DOMTemplate (file_get_contents ('theme/templates/sitemap.xml'));
-file_put_contents ('cache/sitemap.xml', $template);
+file_put_contents ('output/sitemap.xml', $template);
 
 //@unlink ('db.sqlite');
 

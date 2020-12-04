@@ -1,9 +1,8 @@
 <?php //sqlite.php: database class
-/* ====================================================================================================================== */
-/* Camen Design v.4 © Copyright (CC-BY) Kroc Camen 2013
-   licenced under Creative Commons Attribution 3.0 <creativecommons.org/licenses/by/3.0/deed.en_GB>
-   you may do whatever you want to this code as long as you give credit to Kroc Camen, <camendesign.com>
-*/
+//==============================================================================
+// camen design, copyright (cc-by) Kroc Camen, 2003-2020
+// licenced under Creative Commons Attribution 4.0
+// <creativecommons.org/licenses/by/4.0/deed.en_GB>
 
 class database {
 	//query types supported, see the `query` method for descriptions

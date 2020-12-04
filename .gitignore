@@ -3,6 +3,10 @@
 __*
 **/__*
 
+# the generated database of articles
+# used to output the website content
+db.sqlite
+
 # include the "content" folder, but not any of its contents!
 # the source documents for the blog goes there
 content/**
