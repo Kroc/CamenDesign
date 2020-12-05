@@ -82,7 +82,7 @@ $types = array_filter (
 	// include only directories, but ignore directories starting with "."
 	preg_grep ('/^\./', scandir ('.'), PREG_GREP_INVERT), 'is_dir'
 );
-$tags = array ();
+$tags = [];
 
 // get each article in each content-type folder:
 foreach ($types as $type) foreach (
@@ -157,7 +157,7 @@ foreach ($types as $type) foreach (
 	
 	// add the article to the database:
 	//--------------------------------------------------------------------------
-	$sql_insert_article->execute (array (
+	$sql_insert_article->execute ([
 		':name'		=> pathinfo ($file_name, PATHINFO_FILENAME),
 		':date'		=> $meta['date'],
 		':updated'	=> $meta['updated'],
@@ -174,7 +174,7 @@ foreach ($types as $type) foreach (
 				   remarkable (str_replace ('&__HREF__;',
 					$type.'/'.pathinfo ($file_name, PATHINFO_FILENAME), $content
 				   ), 0, 124, '.')
-	));
+	]);
 }
 
 echo "OK\n"; ob_flush (); flush ();
@@ -191,7 +191,7 @@ chdir ('..');
 // [3]: generate the article pages
 //==============================================================================
 // loop over the categories (types + tags), including the root as a catch-all
-foreach (array_merge (array (''), $types, $tags) as $category) {
+foreach (array_merge ([''], $types, $tags) as $category) {
 	echo "PROCESSING ARTICLES: $category\n"; ob_flush (); flush ();
 	
 	// ensure the cache sub-folder exists for a cateogry

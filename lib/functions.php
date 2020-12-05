@@ -52,8 +52,8 @@ function rssTitle ($s_string) {
 	// formatting in the titles can be conveyed to people in their RSS readers,
 	// where an `<em>` might stress a word in a particulary important way &c.
 	$s_string = str_replace (
-		array ('<strong>', '</strong>', '<em>', '</em>', '<q>', '</q>', '<code>', '</code>', '<br />'),
-		array ('*'       , '*'        , '_'   , '_'    , '“'  , '”'   , '`'     , '`',       ' '     ),
+		['<strong>', '</strong>', '<em>', '</em>', '<q>', '</q>', '<code>', '</code>', '<br />'],
+		['*'       , '*'        , '_'   , '_'    , '“'  , '”'   , '`'     , '`',       ' '     ],
 		$s_string
 	);
 	// strip out any remaining HTML tags. PHP’s `strip_tags` also strips
