@@ -48,8 +48,8 @@ echo "GENERATING DATABASE: "; ob_flush (); flush ();
 // create and connect to the database
 $db = new database ('db.sqlite', <<<'SQL'
 	CREATE TABLE "article" (
-		"name"		TEXT		PRIMARY KEY,
-		"date"		INTEGER,
+		"basename"	TEXT		PRIMARY KEY,
+		"pubdate"	INTEGER,
 		"updated"	INTEGER,
 		"title"		TEXT,
 		"url"		TEXT,
@@ -69,7 +69,7 @@ SQL
 // so compile it for fast re-use
 $sql_insert_article = $db->prepare (
 	'INSERT INTO "article" VALUES '.
-	'(:name, :date, :updated, :title, :url, '.
+	'(:basename, :pubdate, :updated, :title, :url, '.
 	 ':licence, :type, :tags, :files, :html);'
 );
 
@@ -116,7 +116,7 @@ foreach ($types as $type) foreach (
 	}
 	
 	// update article meta data:
-	// --------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// if the "date" or "updated" fields are missing from the meta data, they
 	// will be added. this is so that you can write an article, excluding the
 	// date, and the publish-date will be added automatically at publish time
@@ -158,13 +158,17 @@ foreach ($types as $type) foreach (
 	// add the article to the database:
 	//--------------------------------------------------------------------------
 	$sql_insert_article->execute ([
-		':name'		=> pathinfo ($file_name, PATHINFO_FILENAME),
-		':date'		=> $meta['date'],
-		':updated'	=> $meta['updated'],
+		'basename'	=> pathinfo ($file_name, PATHINFO_FILENAME),
+		'pubdate'	=> $meta['date'],
+		'updated'	=> $meta['updated'],
 		// get the title of the article: (it might be in the meta data,
 		// otherwise find the first ReMarkable heading)
-		':title'	=> @$meta['title'] ? $meta['title']
-				   : (preg_match ('/^# (.*?) #(?: \(#.+?\))?$/m', $content, $_) ? $_[1] : ''),
+		'title'		=> @$meta['title']
+			? $meta['title']
+			: (
+				preg_match ('/^# (.*?) #(?: \(#.+?\))?$/m', $content, $_)
+				? $_[1] : ''
+			),
 		'url'		=> @$meta['url'],
 		'licence'	=> @$meta['licence'],
 		'type'		=> $type,
@@ -223,11 +227,18 @@ foreach (array_merge ([''], $types, $tags) as $category) {
 		// generate the article page:
 		//----------------------------------------------------------------------
 		// get the HTML template
-		$template = new DOMTemplate (file_get_contents ('theme/templates/article.html'));
-		
-		$template->setValue ('/html/article', $article[9], true);
+		$template = new DOMTemplate (
+			file_get_contents ('theme/templates/article.html')
+		);
+
+		// add the converted article to the HTML
+		$template->append ('/html/article', $article[9], true);
+
 		// write the file
-		file_put_contents ('output/'.($category ? "$category/" : '').$article[0].'.html', $template);
+		file_put_contents (
+			'output/'.($category ? "$category/" : '').$article[0].'.html',
+			(string) $template
+		);
 		
 		// generate the HTML code view:
 		//----------------------------------------------------------------------
