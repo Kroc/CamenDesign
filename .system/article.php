@@ -1,9 +1,9 @@
 <?php
 //==============================================================================
-// camen design © copyright (c) Kroc Camen 2008-2019, BSD 2-clause
+// camen design © copyright (c) Kroc Camen 2008-2022, BSD 2-clause
 // (see LICENSE.TXT). bugs / suggestions → kroc@camendesign.com
 //
-declare(strict_types=1);
+declare( strict_types=1 );
 
 // article.php : where we generate the HTML for a particular article,
 // cache it and then show it
@@ -30,18 +30,18 @@ include "shared.php";
 
 // “article.php?article=blog/hello.rem”
 $requested = (
-    preg_match ('/^\.?[-a-z0-9_\/]+\.rem$/', @$_GET['article'])
+    preg_match( '/^\.?[-a-z0-9_\/]+\.rem$/', @$_GET['article'] )
     ? $_GET['article'] : false
-) or errorPage (
+) or errorPage(
     'malformed_request.html',
     'Error: Malformed Request',
     ['URL' => '?article=category/article.rem']
 );
 
 // check if there is a category specified:
-$category = preg_match ('/^([-a-z0-9]+)\//', $requested, $_) ? $_[1] : '';
+$category = preg_match( '/^([-a-z0-9]+)\//', $requested, $_ ) ? $_[1] : '';
 // and the second half which is the article to view:
-$article  = pathinfo ($requested, PATHINFO_FILENAME);
+$article  = pathinfo( $requested, PATHINFO_FILENAME );
 
 // for the home page and index pages of each category,
 // the latest article is shown. mod_rewrite handles this by rewriting:
@@ -56,109 +56,109 @@ $is_latest = ($article == 'latest');
 
 // retrieve the article index that
 // lists all metadata for articles
-$index_array = getIndex ();
+$index_array = getIndex();
 
 // filter down the index to only articles
 // in the current category being viewed
-$data = $category ? array_values (
-    array_filter ($index_array, function($v) use ($category) {
-        return (bool)(strpos($v, "|$category|") !== false);
+$data = $category ? array_values(
+    array_filter( $index_array, function($v) use ($category) {
+        return (bool)(strpos( $v, "|$category|" ) !== false);
     })
 ) : $index_array;
 
 // if viewing an index page, retrieve
 // the latest article from the top of the stack
-if ($is_latest) $article = end (@explode ('|', (string) $data[0]));
+if ($is_latest) $article = end( @explode( '|', (string) $data[0] ));
 
 // locate the index for the article
-$index = @reset (preg_grep ("/\|$article$/", $index_array));
+$index = @reset( preg_grep( "/\|$article$/", $index_array ));
 
 // is the article name not in the index?
 if (!$index) {
     // if it’s not an indexed article, then it may be
     // a ‘.rem’ file on disk we want to render (“/projects.rem”)
-    if (!file_exists (APP_ROOT.$requested)) errorPageHTTP (404);
+    if (!file_exists( APP_ROOT.$requested )) errorPageHTTP( 404 );
     $href = ($category ? "$category/" : '')."$article";
     
     // check if the file has a header,
     // it could be a draft (which is not indexed)
-    if ([$meta, $title, $content] = getArticle ($href)) {
+    if ([$meta, $title, $content] = getArticle( $href )) {
         // if a date has not been provided in the draft, just use now
-        if (@!$meta['date'])    $meta['date']    = date ('YmdHi');
-        if (@!$meta['updated']) $meta['updated'] = date ('YmdHi');
+        if (@!$meta['date'])    $meta['date']    = date( 'YmdHi' );
+        if (@!$meta['updated']) $meta['updated'] = date( 'YmdHi' );
         // generate a preview of the draft article
-        exit (templatePage (
+        exit( templatePage(
             // article HTML
-            templateArticle ($meta, $category, $href, $content, $category),
+            templateArticle( $meta, $category, $href, $content, $category ),
             // HTML title
             ($category ? $category.' · ' : '').(
                 // if there’s a title use that, if not use the article name
-                $title ? rssTitle (reMarkable ("# $title #")) : $article
+                $title ? rssTitle( reMarkable( "# $title #" )) : $article
             ),
-            template_load ('base.header.draft.html')
+            template_load( 'base.header.draft.html' )
         ));
     } else {
         // generate a generic page
-        $html = templatePage (
-            reMarkable (file_get_contents (APP_ROOT.$requested)), $article,
-            templateHeader ($href), templateFooter ($href)
+        $html = templatePage(
+            reMarkable( file_get_contents( APP_ROOT.$requested )), $article,
+            templateHeader( $href ), templateFooter( $href )
         );
     };
     
 } else {
     // extrapolate the info from the article’s index
     // (which looks like this: “datetime|type|tag|tag|tag|name”)
-    $type = @reset (array_slice (explode ('|', $index), 1, 1));
-    $tags = count (explode ('|', $index)) == 3
-            ? [] : array_slice (explode ('|', $index), 2, -1);
+    $type = @reset( array_slice( explode( '|', $index ), 1, 1 ));
+    $tags = count( explode( '|', $index )) == 3
+            ? [] : array_slice( explode( '|', $index ), 2, -1 );
     $href = "$type/$article";
     
     // if a category is specified and the article is not in that category
     // redirect to the permalink version instead: (the user either typo’d
     // or an article has changed its tags at some point)
-    if ($category && ($type != $category && !@in_array ($category, $tags))) {
-        header ('Location: http://'.APP_HOST."/$href", true, 301);
+    if ($category && ($type != $category && !@in_array( $category, $tags ))) {
+        header( 'Location: http://'.APP_HOST."/$href", true, 301 );
         exit;
     }
     
     // open the file and read the metadata and HTML
-    [$meta, $title, $content] = getArticle ($href);
+    [$meta, $title, $content] = getArticle( $href );
     
     // find the article’s relative position in the index
     // so that we can link to the previous and next articles
-    $key = @reset (array_keys ($data, $index));
+    $key = @reset( array_keys( $data, $index ));
     
     // template the full page
-    $html = templatePage (
+    $html = templatePage(
         // article HTML
-        templateArticle ($meta, $type, $href, $content, $category),
+        templateArticle( $meta, $type, $href, $content, $category ),
         // HTML title
         ($category ? $category.($is_latest ? '' : ' · ') : '').
         ($is_latest ? ($category ? '' : 'camen design') : (
             // if there’s a title use that, if not use the article name
-            $title ? rssTitle (reMarkable ("# $title #")) : $article
+            $title ? rssTitle( reMarkable( "# $title #" )) : $article
         )),
         // website header—contains the previous / next article links
-        templateHeader ($requested,
+        templateHeader( $requested,
             // next, prev article links
-            isset ($data[$key+1])
-            ? template_tags (
-                template_load ('article-prev.html'),
+            isset( $data[$key+1] )
+            ? template_tags(
+                template_load( 'article-prev.html' ),
                 [   'HREF' => ($category ? "/$category/" : '/')
-                              .@end (explode ('|', $data[$key+1]))
+                              .@end( explode( '|', $data[$key+1] ))
                 ]
             ) : '',
-            isset ($data[$key-1])
-            ? template_tags (
-                template_load ('article-next.html'),
+            isset( $data[$key-1] )
+            ? template_tags(
+                template_load( 'article-next.html' ),
                 [   'HREF' => ($category ? "/$category/" : '/')
-                              .@end (explode ('|', $data[$key-1]))
+                              .@end( explode( '|', $data[$key-1] ))
                 ]
             ) : '',
             // canonical URL
             $href
         ),
-        templateFooter ($href)
+        templateFooter( $href )
     );
 }
 
@@ -171,24 +171,24 @@ if (!$index) {
 if ($_SERVER['SERVER_ADDR'] != '127.0.0.1') {
     // before saving the cache,
     // replicate any sub folders in the cache area too
-    @mkdir (APP_CACHE.dirname ($requested), 0777, true);
+    @mkdir( APP_CACHE.dirname( $requested ), 0777, true );
     
     // save the cache
-    file_put_contents (
-        APP_CACHE.dirname ($requested)
-        .'/'.pathinfo ($requested, PATHINFO_FILENAME).'.html',
+    file_put_contents(
+        APP_CACHE.dirname( $requested )
+        .'/'.pathinfo( $requested, PATHINFO_FILENAME ).'.html',
         $html, LOCK_EX
-    ) or errorPage (
+    ) or errorPage(
         'denied_cache.rem', 'Error: Permission Denied', ['PATH' => APP_CACHE]
     );
 }
 
-exit (preg_match ('/\.html($|\?)/', $_SERVER['REQUEST_URI']) ? template_tags (
-    template_load ('view-source.html'), [
-        'TITLE'  => pathinfo ($requested, PATHINFO_BASENAME),
+exit( preg_match( '/\.html($|\?)/', $_SERVER['REQUEST_URI'] ) ? template_tags(
+    template_load( 'view-source.html' ), [
+        'TITLE'  => pathinfo( $requested, PATHINFO_BASENAME ),
         'HEADER' => '',
-        'CODE'   => htmlspecialchars ($html, ENT_NOQUOTES, 'UTF-8')
+        'CODE'   => htmlspecialchars( $html, ENT_NOQUOTES, 'UTF-8' )
     ]
-) : $html);
+) : $html );
 
 ?>

@@ -1,6 +1,6 @@
 <?php
 //==============================================================================
-// camen design © copyright (c) Kroc Camen 2008-2019, BSD 2-clause
+// camen design © copyright (c) Kroc Camen 2008-2022, BSD 2-clause
 // (see LICENSE.TXT). bugs / suggestions → kroc@camendesign.com
 //
 declare(strict_types=1);
