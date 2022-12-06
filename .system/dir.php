@@ -25,7 +25,7 @@ $path = (
 
 $dir = preg_grep ('/^_/', array_diff (
     //other folders / files to ignore
-    scandir ('.'), ['.', '.DS_Store', 'Thumbs.db']
+    scandir ('.'), ['.', '.cache', '.DS_Store', 'Thumbs.db']
 ), PREG_GREP_INVERT);
 
 // sort folders first, then by type, then alphabetically

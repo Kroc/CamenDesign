@@ -491,7 +491,12 @@ video, iframe			{border: none;}
 figure, article>img		{display: inline-block; max-width: 640px; margin: 0 auto; padding: 18px 19px;
 				 background-color: #eee;}
 figure img			{/* block images have a bottom margin which is already provided by figure ^ */
-				 display: block; margin-bottom: 0 !important; border: none !important;
+				 display: block; margin-bottom: 0 !important;
+				 /* don't allow images in figures to overspill the figure frame. we have to add
+				    `height: auto` otherwise the height attribute on the img element warps the
+				    aspect ratio! */
+				 max-width: 640px; height: auto; 
+				 border: none !important;
 				 -webkit-box-shadow: none !important;
 				    -moz-box-shadow: none !important;
 				         box-shadow: none !important;}

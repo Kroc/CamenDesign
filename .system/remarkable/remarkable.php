@@ -298,15 +298,15 @@ function remarkable (
                 //--------------------------------------------------------------
                 // get image size for width / height attributes on the img tag
                 $info = getimagesize ("{$base_path}{$m[3][0]}");
-                $link = $mimes[pathinfo ($m[4][0], PATHINFO_EXTENSION)] ?? '';
+                $link = $mimes[pathinfo (@$m[4][0], PATHINFO_EXTENSION)] ?? '';
                 // swap in the HTML
                 $source_text = substr_replace ($source_text,
                     // if a thumbmail, include the link
-                    (strlen($m[4][0]) ? "<a href=\"{$m[4][0]}\"".($link ? " type=\"$link\"" : '').'>' : '').
+                    (strlen(@$m[4][0]) ? "<a href=\"{$m[4][0]}\"".($link ? " type=\"$link\"" : '').'>' : '').
                     // construct the image tag
                     "<img src=\"{$m[3][0]}\" alt={$m[1][0]}".(@$m[5][0] ? " title={$m[5][0]}" : '')
                     .(isset ($info[0]) ? " width=\"{$info[0]}\" height=\"{$info[1]}\"" : '')."$x>"
-                    .(strlen($m[4][0]) ? '</a>' : ''),
+                    .(strlen(@$m[4][0]) ? '</a>' : ''),
                     // replacement start and length
                     $m[0][1], strlen ($m[0][0])
                 );
@@ -642,7 +642,7 @@ function remarkable (
         //
         '/^:: (?:\(#([0-9a-z_-]+)\))?(.*)\n{0,2}((?:\t+.*\n)+|(?:\t+.*(?:\n|(\n)\n)?)+)?\n(?=\n::|<\/dl>)/m' => function($m){
             return
-                '<dt'.(isset($m[1]) ? " id=\"{$m[1]}\"" : '').">{$m[2]}</dt>\n\n"
+                '<dt'.(strlen($m[1]) ? " id=\"{$m[1]}\"" : '').">{$m[2]}</dt>\n\n"
                 .(isset($m[3])
                     ?   "<dd>\n".@$m[4].preg_replace("/^\\t/m", '', $m[3]).@$m[4]."\n</dd>\n\n"
                     :   ''
