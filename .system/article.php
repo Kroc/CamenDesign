@@ -68,7 +68,8 @@ $data = $category ? array_values(
 
 // if viewing an index page, retrieve
 // the latest article from the top of the stack
-if ($is_latest) $article = end( @explode( '|', (string) $data[0] ));
+$_ = @explode ('|', (string) $data[0]);
+if ($is_latest) $article = array_pop ($_);
 
 // locate the index for the article
 $index = @reset( preg_grep( "/\|$article$/", $index_array ));
@@ -82,7 +83,7 @@ if (!$index) {
     
     // check if the file has a header,
     // it could be a draft (which is not indexed)
-    if ([$meta, $title, $content] = getArticle( $href )) {
+    if (@[$meta, $title, $content] = getArticle ($href)) {
         // if a date has not been provided in the draft, just use now
         if (@!$meta['date'])    $meta['date']    = date( 'YmdHi' );
         if (@!$meta['updated']) $meta['updated'] = date( 'YmdHi' );

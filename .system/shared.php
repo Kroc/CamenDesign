@@ -187,18 +187,18 @@ function indexSite (): void {
             if (!is_writable( "$type/$file_name" )) @chmod( "$type/$file_name", 0777 ) or errorPage(
                 'denied_article.rem', 'Error: Permission Denied', ['PATH' => "$type/$file_name"]
             );
-            file_put_contents( "$type/$file_name",
-                "{\t\"date\"\t\t:\t${meta['date']},\n"
-                ."\t\"updated\"\t:\t${meta['updated']}"
+            file_put_contents ("$type/$file_name",
+                "{\t\"date\"\t\t:\t{$meta['date']},\n"
+                ."\t\"updated\"\t:\t{$meta['updated']}"
                 // optional stuff
                 .(@$meta['title']     ? ",\n\t\"title\"\t:\t\"".str_replace( '"', '\"', $meta['title'] )
                     ."\"" : '')
-                .(@$meta['licence']   ? ",\n\t\"licence\"\t:\t\"${meta['licence']}\"" : '')
-                .(@$meta['tags']      ? ",\n\t\"tags\"\t\t:\t[\"".implode( '", "',$meta['tags'] )."\"]" : '')
+                .(@$meta['licence']   ? ",\n\t\"licence\"\t:\t\"{$meta['licence']}\"" : '')
+                .(@$meta['tags']      ? ",\n\t\"tags\"\t\t:\t[\"".implode ('", "',$meta['tags'])."\"]" : '')
                 .(@$meta['enclosure'] ? ",\n\t\"enclosure\"\t:\t[\""
-                    .implode( '", "',$meta['enclosure'] )."\"]" : '')
-                .(@$meta['url']       ? ",\n\t\"url\"\t\t:\t\"${meta['url']}\"" : '')
-                .(@$meta['draft']     ? ",\n\t\"draft\"\t\t:\t${meta['draft']}\n" : "\n")
+                    .implode ('", "',$meta['enclosure'])."\"]" : '')
+                .(@$meta['url']       ? ",\n\t\"url\"\t\t:\t\"{$meta['url']}\"" : '')
+                .(@$meta['draft']     ? ",\n\t\"draft\"\t\t:\t{$meta['draft']}\n" : "\n")
                 // the entry’s content
                 ."}\n\n".$content
             );
