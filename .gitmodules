@@ -1,0 +1,4 @@
+[submodule ".system/domtemplate"]
+	path = .system/domtemplate
+	url = https://github.com/Kroc/DOMTemplate.git
+	branch = development
