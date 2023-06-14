@@ -73,13 +73,15 @@ small				{vertical-align: top; font: 12px/19px Georgia, serif;}
 /* --- monospace -------------------------------------------------------------------------------------------------------- */
 samp, code			{/* `<samp>` does not align correctly with the baseline and increases line-height
 	 			    also, monospace fonts look too large in large text like title / quotes… */
-				 font-size: 75%; line-height: 0;}
+				 /** removed due to `line-height: 0` collapsing all lines on recent browsers
+				 font-size: 75%; line-height: 0;**/}
 samp, code, pre			{font-family: Menlo, Monaco, Consolas, monospace;}
 section samp, section code,	/* …but too small in normal text */
- figure samp,  figure code	{font-size: 90%;}
+ figure samp,  figure code	{/*font-size: 90%;*/}
 
 pre				{margin-bottom: 19px; padding: 18px 0; border: 1px dotted #666;
-				 font-size: 75%; white-space: pre-wrap;}
+				 /* since pre-blocks won't wrap their contents, allow sideways scroll */
+				 white-space: pre; overflow-x: auto;}
 pre code			{font-size: 100%;}
 
 /* --- quotes ----------------------------------------------------------------------------------------------------------- */
@@ -910,6 +912,8 @@ article>header>*		{padding-right: 0; border-top: 1px dotted #431;}
 
 article>header small		/* creative-commons logos */
  a[rel~=license]		{text-indent: 0; font: 126px/104px "CC Icons"; background: none;}
+article>header small>abbr	{/* remove the abbr underline */
+				 text-decoration: none;}
 
 
 /* === desktop : content ================================================================================================ */
@@ -983,6 +987,8 @@ figure audio			{width: 100%; margin-top: 8px;}
 /* === desktop : tables ================================================================================================= */
 /* added in 2019, this is very, very untested */
 
+table				{/* strange bug(?) where the table's initial font-size was being used instead of html */
+				 font-size: inherit;}
 section table>tbody>tr:nth-child(odd)
 				{background-color: #ccd;}
 
