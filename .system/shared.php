@@ -213,7 +213,10 @@ function indexSite (): void {
         
         // add this entry to the index
         array_push( $list,
-            $meta['updated']."|$type|".@implode( '|', $meta['tags'] ).(@$meta['tags'] ? '|' : '').$name
+            $meta['updated']."|$type|".(
+                // avoid a warning if the article has no 'tags'
+                isset($meta['tags']) ? @implode( '|', $meta['tags'] ) : ''
+            ).(@$meta['tags'] ? '|' : '').$name
         );
         
         // add to the count for each of the tags
@@ -237,6 +240,8 @@ function indexSite (): void {
     
     // rebuild sitemap?
     //--------------------------------------------------------------------------
+    // TODO: upon rebuilding the index & setting the update date, this issues
+    //       a warning -- changing array pointer on an ad-hoc array
     clearstatcache(); $date = reset( @explode( '|', $list[0] ));
     if (!file_exists( APP_SYSTEM.'sitemap.xml' ) || filemtime( APP_SYSTEM.'sitemap.xml' ) < mktime(
         (integer) substr( $date, 8,  2 ),
