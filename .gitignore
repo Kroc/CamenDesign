@@ -1,9 +1,9 @@
 *
 
 # include dot-files:
-# for git: .gitignore, .gitmodules
-# for site: .htaccess
-# for editors: .vscode/ .editorconfig
+# for git:      .gitignore, .gitmodules
+# for site:     .htaccess
+# for editors:  .vscode/ .editorconfig
 !.*
 
 # include root files

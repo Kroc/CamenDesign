@@ -10,12 +10,14 @@ declare( strict_types=1 );
 // PHP 5.3 issues a warning if the timezone
 // is not set when using date-related commands
 date_default_timezone_set( 'Europe/London' );
-//error_reporting( 0 );
+error_reporting( E_ALL );
 
 // “ReMarkable” is my Markdown-like syntax for writing in plain text
 // and converting to HTML see the ReMarkable folder for documentation,
 // or the website <camendesign.com/code/remarkable>
-include 'remarkable/remarkable.php';
+require_once 'remarkable/remarkable.php';
+
+require_once 'domtemplate/domtemplate.php';
 
 // preferred domain
 define( 'APP_HOST',         'camendesign.com'               );
@@ -97,7 +99,7 @@ function mimeType (string $extension): string {
 function rssTitle (string $string): string {
     // replace some HTML tags with text equivalents. this is done so that
     // formatting in the titles can be conveyed to people in their RSS readers,
-    // where an `<em>` might stress a word in a particulary important way &c.
+    // where an `<em>` might stress a word in a particularly important way &c.
     $string = str_replace(
         ['<strong>', '</strong>', '<em>', '</em>', '<q>', '</q>', '<code>', '</code>', '<br />'],
         ['*'       , '*'        , '_'   , '_'    , '“'  , '”'   , '`'     , '`',       ' '     ],
@@ -282,6 +284,104 @@ function getIndex (): array {
 
 //==============================================================================
 
+// all pages share this base HTML template
+//
+class BaseTemplate
+    extends kroc\DOMTemplate
+{
+    public function __construct (){
+        // pre-populate the DOMTemplate using our base HTML template
+        parent::__construct(file_get_contents(
+            APP_SYSTEM.'templates'.DIRECTORY_SEPARATOR.'article.html'
+        ));
+    }
+
+    public string $name = '';           // name (URL-slug) of the page
+    public string $canonical_url = '';  // canonical URL of page
+    public string $path = '';           // canonical path (i.e. OS slashes)
+    public string $title = '';          // page title (optional)
+
+    public function __toString(): string {
+        //----------------------------------------------------------------------
+        // header:
+        //----------------------------------------------------------------------
+        $this->setValue(
+            './title', $this->title
+
+        // <head> meta:
+        )->set([
+            './link[@rel="alternate"][@type="application/rss+xml"]/@href'
+            => $this->category ? "/$this->category/rss" : '/rss',
+            './link[@rel="alternate"][@type="application/rss+xml"]/@title'
+            => $this->category ? "Just $this->category" : 'All categories',
+            './link[@rel="canonical"]/@href'
+            => $this->canonical_url
+            
+        // header links:
+        ])->remove([
+            // home page?
+            './header//nav/ul[1]/li[1]/a/@rel'
+                => $this->category || $this->name == 'projects',
+            // projects page?
+            './header//nav/ul[1]/li[2]/a/@rel'
+                => $this->name !== 'projects',
+        ]);
+
+        // site categories:
+        //
+        // avoid a nasty race condition where by the index is not present
+        // because of an error generating the index and this function tries
+        // to load the index to create the category list on the error page
+        //
+        if (!file_exists( APP_CACHE.'index.list' )) {
+            // if the index is not present, remove the category list entirely
+            $this->remove( './header//ul' );
+        } else {
+            // create the sub-template for the category type label
+            $type_template = $this->repeat( './header//ul[2]/li[1]' );
+            // loop over all category types in the site
+            foreach (
+                getTypes() as $_type => $_count
+            ) $type_template->set([
+                'a' => $_type,
+                'a/@href ' => "/$_type/"
+            ])
+            ->remove([ 'a@rel' => $this->category != $_type ])
+            ->next();
+
+            // create the sub-template for the category tag label
+            $tag_template = $this->repeat( './header//ul[3]/li[1]' );
+            // loop over all category tags in the site
+            foreach (
+                getTags() as $_tag => $_count
+            ) $tag_template->set([
+                'a' => $_tag,
+                'a/@href ' => "/$_tag/"
+            ])
+            ->remove([ 'a@rel' => $this->category != $_tag ])
+            ->next();
+
+            // fix whitespace (todo: last element)
+            $this->appendAfter(
+                './header//ul[2]/li|./header//ul[3]/li', "\n\t\t"
+            );
+        }
+
+        // page footer:
+        //----------------------------------------------------------------------
+        $this->set([
+            // links to the source .rem & .html version of the article
+            './footer/nav[2]/a[1]/@href' => "$this->canonical_url.rem",
+            './footer/nav[2]/a[2]/@href' => "$this->canonical_url.html",
+            './footer/form/input[@name="sites"]/@value' => APP_HOST,
+        ]);
+
+        return parent::__toString();
+    }
+}
+
+//==============================================================================
+
 // generate a whole HTML page, given the article content
 // and optional header and footer block to include
 function templatePage (
@@ -369,7 +469,7 @@ function templateArticle (
     // (saves having to write `$a_meta['...']` a million times)
     extract( $meta, EXTR_PREFIX_ALL, 'm' );
     $name = @end( explode( '/', $href, 2 ));
-    
+
     // an image enclosure gets a preview image
     //--------------------------------------------------------------------------
     // (this switch statement is going to bend your mind a bit)
@@ -448,8 +548,9 @@ function templateArticle (
                     return is_numeric( $a )
                     ? ($a>=1024 ? $a/1024 : number_format( $a, strlen( $b )-2 ).$b)
                     : $a;
-                }
-            ), filesize( APP_ROOT."$href/$enclosure" )
+                },
+                filesize( APP_ROOT."$href/$enclosure" )
+            )
         ]);
     }
     
@@ -505,7 +606,7 @@ function templateArticle (
             'TAG' => $type, 'HREF' => "/$type/$name",
             'ON'  => $type==$category ? template_load( 'tag-bookmark-on.html' ) : ''
         ]).(@!$m_tags ? '' : array_reduce(
-            // template each tag and concenate into a list
+            // template each tag and concatenate into a list
             $m_tags, function ($a, $b) use($name, $category) {
                 return $a .= template_tags( template_load( 'tag.html' ), [
                     'TAG' => $b, 'HREF' => "/$b/$name",
