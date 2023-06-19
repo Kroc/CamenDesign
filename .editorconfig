@@ -1,0 +1,72 @@
+# ".editorconfig" is the best attempt at a standard we've had so far for
+# specifying portable settings in text-editors; some editors support this out
+# of the box, many have plugins -- see the website for details:
+# <editorconfig.org>
+
+#===============================================================================
+
+# LICENSE: I assert no copyright on this file at all,
+#          it should be considered within the Public Domain
+
+# this tells the editor to stop traversing up the folder hierarchy looking for
+# ".editorconfig" files; we want this file to specify my settings, rather than
+# inheriting from some potentially unknown file higher up
+root = true
+
+# the defaults (if supported by the editor-in-question)
+# for all files in this project
+[*]
+charset = utf-8
+end_of_line = crlf
+trim_trailing_whitespace = false
+
+# files that *must* have LF (and not CRLF) endings
+#-------------------------------------------------------------------------------
+[*.sh]
+end_of_line = lf
+
+# text / documentation files
+#-------------------------------------------------------------------------------
+[*.{txt,md,rem}]
+# for text / documentation formats, a trailing line adds readability
+insert_final_newline = true
+
+# Markdown
+#-------------------------------------------------------------------------------
+[*.md]
+# this is pretty much required for Markdown,
+# otherwise your indent blocks can break
+indent_style = space
+indent_size = 4
+
+# 8-tabs
+#-------------------------------------------------------------------------------
+# ReMarkable (like MarkDown): <camendesign.com/remarkable>
+[*.{rem,bat,htaccess}]
+# note that ReMarkable *requires* tabs and not spaces
+# to be able to ascertain true indent levels
+indent_style = tab
+indent_size = tab
+tab_width = 8
+
+# batch files
+#-------------------------------------------------------------------------------
+[*.bat]
+# for "DOS" we opt for the ASCII/ANSI charset for maximum compatibility
+charset = latin1
+
+[*.php]
+#-------------------------------------------------------------------------------
+# you can take your PSR-2 and shove it
+indent_style = space
+indent_size = 4
+insert_final_newline = false
+
+# Visual Basic 6
+#-------------------------------------------------------------------------------
+[*.{bas,cls,ctl,frm,vbp}]
+# for my projects that contain VB6 code, here's how these files should be seen
+indent_style = space
+indent_size = 4
+# VB6 may not work well with UTF-8 files
+charset = latin1

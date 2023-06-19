@@ -1,3 +1,19 @@
 *
+
+# include dot-files:
+# for git: .gitignore, .gitmodules
+# for site: .htaccess
+# for editors: .vscode/ .editorconfig
+!.*
+
+# include root files
+!*.txt
+
+# include all of the .system folder where the code resides
+!/.system**
 /.system/sitemap.xml
-!.gitmodules
+
+# ignore anything beginning with "__"
+# (used to hide stuff from the repository)
+__*
+**/__*
