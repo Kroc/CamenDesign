@@ -310,18 +310,19 @@ class BaseTemplate
         //----------------------------------------------------------------------
         // header:
         //----------------------------------------------------------------------
-        $this->setValue(
-            './title', $this->title
-
         // <head> meta:
-        )->set([
+        $this->set([
+            './title' => $this->title.(
+                // append the category, if present
+                $this->category ? ' · '.$this->category : ''
+            ),
             './link[@rel="alternate"][@type="application/rss+xml"]/@href'
             => $this->category ? "/$this->category/rss" : '/rss',
             './link[@rel="alternate"][@type="application/rss+xml"]/@title'
             => $this->category ? "Just $this->category" : 'All categories',
             './link[@rel="canonical"]/@href'
             => $this->canonical_url
-            
+
         // header links:
         ])->remove([
             // home page?

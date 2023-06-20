@@ -40,7 +40,7 @@ class ArticleTemplate
 
         // the canonical URL always points to the actual location of the
         // article, even when being viewed from a different category
-        $this->canonical_url = "$this->type/$this->name";
+        $this->canonical_url = '/'.$this->type.'/'.$this->name;
         // the path is likewise the same but using OS-dependant slashes,
         // it is used as a stub for files sharing the same base name but
         // with differing extensions, and for the directory where related
@@ -54,8 +54,6 @@ class ArticleTemplate
             ?   rssTitle( reMarkable( "# $this->title #" ))
                 // if not use the article slug from the URL
             :   $this->name
-        ).( // append the category, if present
-            $this->category ? ' · '.$this->category : ''
         );
 
         //----------------------------------------------------------------------
@@ -384,38 +382,46 @@ $index = @reset( preg_grep( "/\|$url_article$/", $index_array ));
 // is the article name not in the index?
 if (!$index) {
     // if it’s not an indexed article, then it may be
-    // a ‘.rem’ file on disk we want to render (“/projects.rem”)
-    if (!file_exists( APP_ROOT.$path_requested.".rem" )) errorPageHTTP( 404 );
-    $url_canonical = ($url_category ? "$url_category/" : '')."$url_article";
+    // a ‘.rem’ file on disk we want to render (e.g. “/projects.rem”)
+    if (!file_exists( APP_ROOT.$path_requested.'.rem' )) errorPageHTTP( 404 );
+    $url_canonical = ($url_category ? $url_category.'/' : '').$url_article;
 
     // check if the file has a header,
     // it could be a draft (which is not indexed)
     if (@[$meta, $title, $content] = getArticle( $url_canonical )) {
         // if a date has not been provided in the draft, just use now
-        if (@!$meta['date'])    $meta['date']    = date( 'YmdHi' );
-        if (@!$meta['updated']) $meta['updated'] = date( 'YmdHi' );
+        $meta['date']    ??= date( 'YmdHi' );
+        $meta['updated'] ??= date( 'YmdHi' );
+
         // generate a preview of the draft article
-        exit( templatePage(
-            // article HTML
-            templateArticle( $meta, $url_category, $url_canonical, $content, $url_category ),
-            // HTML title
-            ($url_category ? $url_category.' · ' : '').(
-                // if there’s a title use that, if not use the article name
-                $title ? rssTitle( reMarkable( "# $title #" )) : $url_article
-            ),
-            template_load( 'base.header.draft.html' )
-        ));
+        //----------------------------------------------------------------------
+        $article = new ArticleTemplate;
+        $article->type = $url_category;
+        $article->category = $url_category;
+        $article->name = $url_article;
+        $article->title = $meta['title'] ?? '';
+        $article->date_published = (string) $meta['date'];
+        $article->date_updated   = (string) $meta['updated'];
+        $article->type = $url_category;
+        $article->tags = $meta['tags'] ?? null;
+        $article->licence = $meta['licence'] ?? null;
+        $article->enclosures = $meta['enclosure'] ?? [];
+        $article->content = $content;
+        
+        exit( $article );
+
     } else {
         // template a basic page rather than an article page
+        //----------------------------------------------------------------------
         $template = new BaseTemplate( 'article.html' );
         $template->name = $url_article;
+        $template->type = $url_category;
         $template->category = $url_category;
-        $template->canonical_url = $url_canonical;
         $template->path = $path_requested;
         // TODO: .rem files should be able to specify title metadata
         $template->title = $url_article;
         $template->content = reMarkable(
-            file_get_contents( APP_ROOT.$path_requested.".rem" )
+            file_get_contents( APP_ROOT.$path_requested.'.rem' )
         );
 
         // TODO: for now remove article-page elements not needed;
