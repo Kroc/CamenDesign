@@ -48,12 +48,15 @@ class ArticleTemplate
         $this->path = $this->type.DIRECTORY_SEPARATOR.$this->name;
         // set the HTML title based on selected category
         $this->title = (
-            $this->category ? $this->category.($is_latest ? '' : ' · ') : ''
-        ).( $this->title
-            // if there’s a title use that,
-        ?   rssTitle( reMarkable( "# $this->title #" ))
-            // if not use the article name
-        :   $this->name);
+            // if a readable title is already provided
+            $this->title
+                // use that, but TitleCase it
+            ?   rssTitle( reMarkable( "# $this->title #" ))
+                // if not use the article slug from the URL
+            :   $this->name
+        ).( // append the category, if present
+            $this->category ? ' · '.$this->category : ''
+        );
 
         //----------------------------------------------------------------------
         // previous / next articles in the series?
