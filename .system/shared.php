@@ -289,17 +289,22 @@ function getIndex (): array {
 class BaseTemplate
     extends kroc\DOMTemplate
 {
-    public function __construct (){
-        // pre-populate the DOMTemplate using our base HTML template
-        parent::__construct(file_get_contents(
-            APP_SYSTEM.'templates'.DIRECTORY_SEPARATOR.'article.html'
-        ));
-    }
-
     public string $name = '';           // name (URL-slug) of the page
+    public string $category ='';        // optional, category (tag) of page
+
     public string $canonical_url = '';  // canonical URL of page
     public string $path = '';           // canonical path (i.e. OS slashes)
     public string $title = '';          // page title (optional)
+    public string $content = '';        // page content (HTML string)
+
+    public function __construct(
+        string $template_name
+    ){
+        // pre-populate the DOMTemplate using our base HTML template
+        parent::__construct(file_get_contents(
+            APP_SYSTEM.'templates'.DIRECTORY_SEPARATOR.$template_name
+        ));
+    }
 
     public function __toString(): string {
         //----------------------------------------------------------------------
@@ -366,6 +371,10 @@ class BaseTemplate
                 './header//ul[2]/li|./header//ul[3]/li', "\n\t\t"
             );
         }
+
+        // page content:
+        //----------------------------------------------------------------------
+        $this->append( 'article', $this->content );
 
         // page footer:
         //----------------------------------------------------------------------

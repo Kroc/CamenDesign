@@ -12,14 +12,13 @@ include "shared.php";
 class ArticleTemplate
     extends BaseTemplate
 {
-    // every article has a canonical category known as the type, this is where
-    // the article is physically located, e.g. "/code/dom_templating.rem",
+    // every article has a canonical category known as the type, this is
+    // where the article is physically located, e.g. "/code/dom_templating",
     // however articles can also be viewed from their other categories such
-    // as "/web-dev/dom_templating.rem" even though the "web-dev" folder
-    // doesn't exist -- we must be careful to manage the two locations
+    // as "/web-dev/dom_templating" even though the "web-dev" folder doesn't
+    // exist -- we must be careful to manage the two locations separately
     //
     public string $type ='';            // article's canonical category (type)
-    public string $category ='';        // optional, may be same as type
 
     public string $next ='';            // name of next article in series
     public string $prev ='';            // name of previous article in series
@@ -28,20 +27,24 @@ class ArticleTemplate
     public string $date_updated ='';    // page updated time (optional)
 
     public array  $tags = [];           // array of article tags
-
     public string $licence ='';         // article licence
-
     public array  $enclosures =[];      // article attachments
 
-    public string $content ='';         // untransformed article text
     public string $url ='';
+
+    public function __construct (){
+        parent::__construct( 'article.html' );
+    }
 
     public function __toString(): string {
 
         // the canonical URL always points to the actual location of the
         // article, even when being viewed from a different category
         $this->canonical_url = "$this->type/$this->name";
-        // the path is likewise the same but using OS-dependant slashes
+        // the path is likewise the same but using OS-dependant slashes,
+        // it is used as a stub for files sharing the same base name but
+        // with differing extensions, and for the directory where related
+        // files for the article are stored
         $this->path = $this->type.DIRECTORY_SEPARATOR.$this->name;
         // set the HTML title based on selected category
         $this->title = (
@@ -177,17 +180,14 @@ class ArticleTemplate
 
         // article content:
         //----------------------------------------------------------------------
-        $this->appendAfter(
-            './article/header',
-            "\n\n".reMarkable(
-                // TODO: keep string-replacement for these?
-                template_tags( $this->content, [
-                    'TITLE' => $this->title,
-                    'HREF'  => $this->canonical_url,
-                    'URL'   => $this->url
-                ]),
-                1        // indent by 1 tab to match the <article> HTML depth
-            )
+        $this->content = "\n\n".reMarkable(
+            // TODO: keep string-replacement for these?
+            template_tags( $this->content, [
+                'TITLE' => $this->title,
+                'HREF'  => $this->canonical_url,
+                'URL'   => $this->url
+            ]),
+            1        // indent by 1 tab to match the <article> HTML depth
         );
 
         return parent::__toString();
@@ -336,9 +336,15 @@ $url_requested = (
 // check if there is a category specified:
 // note: this is the category specified in the URL; which can be
 // any (or none!) of the types or tags the article is assigned to
-$url_category = preg_match( '/^([-a-z0-9]+)\//', $url_requested, $_ ) ? $_[1] : '';
+$url_category = preg_match( '/^([-a-z0-9]+)\//', $url_requested, $_ )
+    ? $_[1] : ''
+;
 // and the second half which is the article name (URL-version) to view:
-$url_article  = pathinfo( $url_requested, PATHINFO_FILENAME );
+$url_article = pathinfo( $url_requested, PATHINFO_FILENAME );
+// as a file path with OS slashes
+$path_requested = (
+    $url_category ? $url_category.DIRECTORY_SEPARATOR : ''
+).$url_article;
 
 // for the home page and index pages of each category,
 // the latest article is shown. mod_rewrite handles this by rewriting:
@@ -376,7 +382,7 @@ $index = @reset( preg_grep( "/\|$url_article$/", $index_array ));
 if (!$index) {
     // if it’s not an indexed article, then it may be
     // a ‘.rem’ file on disk we want to render (“/projects.rem”)
-    if (!file_exists( APP_ROOT.$url_requested )) errorPageHTTP( 404 );
+    if (!file_exists( APP_ROOT.$path_requested.".rem" )) errorPageHTTP( 404 );
     $url_canonical = ($url_category ? "$url_category/" : '')."$url_article";
 
     // check if the file has a header,
@@ -397,11 +403,27 @@ if (!$index) {
             template_load( 'base.header.draft.html' )
         ));
     } else {
-        // generate a generic page
-        $html = templatePage(
-            reMarkable( file_get_contents( APP_ROOT.$url_requested )), $url_article,
-            templateHeader( $url_canonical ), templateFooter( $url_canonical )
+        // template a basic page rather than an article page
+        $template = new BaseTemplate( 'article.html' );
+        $template->name = $url_article;
+        $template->category = $url_category;
+        $template->canonical_url = $url_canonical;
+        $template->path = $path_requested;
+        // TODO: .rem files should be able to specify title metadata
+        $template->title = $url_article;
+        $template->content = reMarkable(
+            file_get_contents( APP_ROOT.$path_requested.".rem" )
         );
+
+        // TODO: for now remove article-page elements not needed;
+        // a separate template for these simple pages should be used
+        $template->remove([
+            'article/header'                => true,
+            './header//a[@rel="previous"]'  => true,
+            './header//a[@rel="next"]'      => true
+        ]);
+
+        $html = (string) $template;
     };
 
     goto output;
@@ -419,7 +441,8 @@ $article_tags = count( explode( '|', $index )) == 3
 // the canonical URL for the article
 $url_canonical = "$article_type/$url_article";
 // the canonical path for the article, i.e. using OS-slashes
-$article_path = $article_type.DIRECTORY_SEPARATOR.$url_article;
+// (does NOT end in a slash)
+$path_canonical = $article_type.DIRECTORY_SEPARATOR.$url_article;
 
 // if a category is specified and the article is not in that category
 // redirect to the permalink version instead: (the user either typo’d
@@ -480,7 +503,7 @@ $article->tags = $article_tags ?? null;
 $article->licence = $m_licence ?? null;
 
 // article enclosures:
-$article->enclosures = $m_enclosure ?? null;
+$article->enclosures = $m_enclosure ?? [];
 
 // article text:
 //------------------------------------------------------------------------------
