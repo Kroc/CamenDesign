@@ -300,8 +300,7 @@ class BaseTemplate
     public function __construct(
         string $template_name
     ){
-        // pre-populate the DOMTemplate using our base HTML template
-        parent::__construct(file_get_contents(
+        parent::__construct( file_get_contents(
             APP_SYSTEM.'templates'.DIRECTORY_SEPARATOR.$template_name
         ));
     }
@@ -315,14 +314,7 @@ class BaseTemplate
             './title' => $this->title.(
                 // append the category, if present
                 $this->category ? ' · '.$this->category : ''
-            ),
-            './link[@rel="alternate"][@type="application/rss+xml"]/@href'
-            => $this->category ? "/$this->category/rss" : '/rss',
-            './link[@rel="alternate"][@type="application/rss+xml"]/@title'
-            => $this->category ? "Just $this->category" : 'All categories',
-            './link[@rel="canonical"]/@href'
-            => $this->canonical_url
-
+            )
         // header links:
         ])->remove([
             // home page?

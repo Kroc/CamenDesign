@@ -32,7 +32,7 @@ class ArticleTemplate
 
     public string $url ='';
 
-    public function __construct (){
+    public function __construct(){
         parent::__construct( 'article.html' );
     }
 
@@ -41,6 +41,17 @@ class ArticleTemplate
         // the canonical URL always points to the actual location of the
         // article, even when being viewed from a different category
         $this->canonical_url = '/'.$this->type.'/'.$this->name;
+        $this->set([
+            // the canonical URL <link> tag is only present on article
+            // pages as these can appear in multiple categories
+            './link[@rel="canonical"]/@href'
+            => $this->canonical_url,
+            './link[@rel="alternate"][@type="application/rss+xml"]/@href'
+            => $this->category ? "/$this->category/rss" : '/rss',
+            './link[@rel="alternate"][@type="application/rss+xml"]/@title'
+            => $this->category ? "Just $this->category" : 'All categories'
+        ]);
+
         // the path is likewise the same but using OS-dependant slashes,
         // it is used as a stub for files sharing the same base name but
         // with differing extensions, and for the directory where related
@@ -93,26 +104,24 @@ class ArticleTemplate
             (integer) substr( $mktime, 6,  2 ),
             (integer) substr( $mktime, 0,  4 )
         );
-        $this->replaceTextArray(
-            './article/header/time', [
-                // 'M': "A short textual representation of a month, three letters"
-                '__MON__'   => date( 'M', $date ),
-                // 'F': “A full textual representation of a month”
-                '__MONTH__' => date( 'F', $date ),
-                // 'j': “Day of the month without leading zeros”
-                '__DAY__'   => date( 'j', $date ),
-                // 'Y': “A full numeric representation of a year, 4 digits”
-                '__YEAR__'  => date( 'Y', $date ),
-                // 'c': “ISO 8601 date” (for `datetime` attribute of `<time>`)
-                '__DATE__'  => date( 'c', $date ),
-                // 'g': “12-hour format of an hour without leading zeros”
-                '__HOUR__'  => date( 'g', $date ),
-                // 'i': “Minutes with leading zeros”
-                '__MINS__'  => date( 'i', $date ),
-                // 'a': “Lowercase Ante meridiem and Post meridiem”
-                '__AMPM__'  => date( 'a', $date )
-            ]
-        )->set([
+        $this->replaceTextArray( './article/header/time', [
+            // 'M': "A short textual representation of a month, three letters"
+            '__MON__'   => date( 'M', $date ),
+            // 'F': “A full textual representation of a month”
+            '__MONTH__' => date( 'F', $date ),
+            // 'j': “Day of the month without leading zeros”
+            '__DAY__'   => date( 'j', $date ),
+            // 'Y': “A full numeric representation of a year, 4 digits”
+            '__YEAR__'  => date( 'Y', $date ),
+            // 'c': “ISO 8601 date” (for `datetime` attribute of `<time>`)
+            '__DATE__'  => date( 'c', $date ),
+            // 'g': “12-hour format of an hour without leading zeros”
+            '__HOUR__'  => date( 'g', $date ),
+            // 'i': “Minutes with leading zeros”
+            '__MINS__'  => date( 'i', $date ),
+            // 'a': “Lowercase Ante meridiem and Post meridiem”
+            '__AMPM__'  => date( 'a', $date )
+        ])->set([
             // 'c': “ISO 8601 date” (for `datetime` attribute of `<time>`)
             './article/header/time/@datetime'    => date( 'c', $date ),
             // 'F': “A full textual representation of a month”
@@ -413,28 +422,19 @@ if (!$index) {
     } else {
         // template a basic page rather than an article page
         //----------------------------------------------------------------------
-        $template = new BaseTemplate( 'article.html' );
+        $template = new BaseTemplate( 'page.html' );
         $template->name = $url_article;
-        $template->type = $url_category;
         $template->category = $url_category;
         $template->path = $path_requested;
+        $template->canonical_url = $url_canonical;
         // TODO: .rem files should be able to specify title metadata
         $template->title = $url_article;
         $template->content = reMarkable(
             file_get_contents( APP_ROOT.$path_requested.'.rem' )
         );
-
-        // TODO: for now remove article-page elements not needed;
-        // a separate template for these simple pages should be used
-        $template->remove([
-            'article/header'                => true,
-            './header//a[@rel="previous"]'  => true,
-            './header//a[@rel="next"]'      => true
-        ]);
-
         $html = (string) $template;
     };
-
+    // what's the worst that could hap-
     goto output;
 }
 
