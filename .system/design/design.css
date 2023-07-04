@@ -297,7 +297,7 @@ blockquote			{margin-bottom: 19px;}
 a				{text-decoration: none;}
 a:hover				{text-decoration: underline;}
 
-/* direct links to files will be preceeded by a file-type icon,
+/* direct links to files will be preceded by a file-type icon,
    (ReMarkable automatically inserts the mime-types for links to file types it knows) */
 a[type]:before			{content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 4px;
 				 text-indent: 0; line-height: 13px; vertical-align: text-top;
@@ -997,11 +997,13 @@ section table>tfoot>tr>th	{border-top: 1px solid #666; padding-top: 8px;}
 
 /* === desktop : fixed-footer =========================================================================================== */
 body>footer			{/* account for the header being fixed to the bottom of the window */
-				 height: 171px; margin: 0; padding: 57px 0 0 0; border-top: none;
+				 height: 152px; margin: 0 0; padding: 0 0 0 0; border-top: none;
 				 /* due to a bug introduced into WebKit with Chrome 4 / Safari 5, the box-model changes
 				    bring done to the body aren’t equal in WebKit / Gecko */
 				 -moz-box-sizing: border-box;}
-body>footer>nav:first-child	{font-size: 14px; line-height: 18px; padding-top: 0;}
+body>footer>nav			{padding-top: 19px;}
+body>footer>nav:first-child	{margin-bottom: 0; padding-bottom: 0;
+				 font-size: 14px; line-height: 18px;}
 body>footer>nav:first-child>a	{text-decoration: none;}
 
 /* === desktop : directory ============================================================================================== */

@@ -373,8 +373,8 @@ class BaseTemplate
         //----------------------------------------------------------------------
         $this->set([
             // links to the source .rem & .html version of the article
-            './footer/nav[2]/a[1]/@href' => "$this->canonical_url.rem",
-            './footer/nav[2]/a[2]/@href' => "$this->canonical_url.html",
+            './footer/nav/a[@rel="nofollow"][1]/@href' => "$this->canonical_url.rem",
+            './footer/nav/a[@rel="nofollow"][2]/@href' => "$this->canonical_url.html",
             './footer/form/input[@name="sites"]/@value' => APP_HOST,
         ]);
 
