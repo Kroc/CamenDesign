@@ -56,7 +56,7 @@ class ArticleTemplate
         // it is used as a stub for files sharing the same base name but
         // with differing extensions, and for the directory where related
         // files for the article are stored
-        $this->path = $this->type.DIRECTORY_SEPARATOR.$this->name;
+        $this->path = $this->type.SLASH.$this->name;
         // set the HTML title based on selected category
         $this->title = (
             // if a readable title is already provided
@@ -211,13 +211,13 @@ class ArticleTemplate
         // but for both images and any other file format we want to template
         // HTML for the file icon
         if ([$preview_width, $preview_height, $preview_type] = getimagesize(
-            APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$enclosure
+            APP_ROOT.$this->path.SLASH.$enclosure
         )) {
             // is the image a 32-bit PNG (has transparency)
             // <camendesign.com/code/uth1_is-png-32bit>
             $is_alpha = ($preview_type == IMAGETYPE_PNG)
             ?   ord( file_get_contents(
-                    APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$enclosure,
+                    APP_ROOT.$this->path.SLASH.$enclosure,
                     false, null, 25, 1
                 )) & 4
             :   false;
@@ -242,7 +242,7 @@ class ArticleTemplate
             // a preview file does not exist, create it...
             //------------------------------------------------------------------
             if ($preview_file != $enclosure && !file_exists(
-                APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$preview_file
+                APP_ROOT.$this->path.SLASH.$preview_file
             )) {
                 $image_preview = imagecreatetruecolor(
                     $preview_width, $preview_height
@@ -252,11 +252,11 @@ class ArticleTemplate
                 switch ($preview_type) {
                     case IMAGETYPE_JPEG:
                         $image = imagecreatefromjpeg(
-                            APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$enclosure
+                            APP_ROOT.$this->path.SLASH.$enclosure
                         ); break;
                     case IMAGETYPE_PNG:
                         $image = imagecreatefrompng(
-                            APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$enclosure
+                            APP_ROOT.$this->path.SLASH.$enclosure
                         ); break;
                 }
 
@@ -278,7 +278,7 @@ class ArticleTemplate
                     imagesavealpha( $image_preview, true );
                     imagepng(
                         $image_preview,
-                        APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$preview_file
+                        APP_ROOT.$this->path.SLASH.$preview_file
                     );
 
                 } else {
@@ -286,7 +286,7 @@ class ArticleTemplate
                     // resized PNGs are very large due to anti-aliasing
                     imagejpeg(
                         $image_preview,
-                        APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$preview_file,
+                        APP_ROOT.$this->path.SLASH.$preview_file,
                         // why 80?
                         // <ebrueggeman.com/article_php_image_optimization.php>
                         80
@@ -306,7 +306,7 @@ class ArticleTemplate
                     ? ($a>=1024 ? $a/1024 : number_format( $a, strlen( $b )-2 ).$b)
                     : $a;
                 },
-                filesize( APP_ROOT.$this->path.DIRECTORY_SEPARATOR.$enclosure )
+                filesize( APP_ROOT.$this->path.SLASH.$enclosure )
             )
         ])->set([
             './@href'     => "/$this->canonical_url/$enclosure",
@@ -353,7 +353,7 @@ $url_category = preg_match( '/^([-a-z0-9]+)\//', $url_requested, $_ )
 $url_article = pathinfo( $url_requested, PATHINFO_FILENAME );
 // as a file path with OS slashes
 $path_requested = (
-    $url_category ? $url_category.DIRECTORY_SEPARATOR : ''
+    $url_category ? $url_category.SLASH : ''
 ).$url_article;
 
 // for the home page and index pages of each category,
@@ -451,7 +451,7 @@ $article_tags = count( explode( '|', $index )) == 3
 $url_canonical = "$article_type/$url_article";
 // the canonical path for the article, i.e. using OS-slashes
 // (does NOT end in a slash)
-$path_canonical = $article_type.DIRECTORY_SEPARATOR.$url_article;
+$path_canonical = $article_type.SLASH.$url_article;
 
 // if a category is specified and the article is not in that category
 // redirect to the permalink version instead: (the user either typo’d

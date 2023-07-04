@@ -19,16 +19,19 @@ require_once 'remarkable/remarkable.php';
 
 require_once 'domtemplate/domtemplate.php';
 
+// could you BE any longer?
+define( 'SLASH',            DIRECTORY_SEPARATOR );
+
 // preferred domain
-define( 'APP_HOST',         'camendesign.com'               );
+define( 'APP_HOST',         'camendesign.com' );
 // full ‘.system’ path for absolute references
-define ('APP_SYSTEM',       dirname (__FILE__).'/'          );
+define ('APP_SYSTEM',       dirname( __FILE__ ).SLASH );
 // full path to webroot
-define( 'APP_ROOT',         realpath (APP_SYSTEM.'../').'/' );
+define( 'APP_ROOT',         realpath( APP_SYSTEM.'..'.SLASH ).SLASH );
 // full path to cache folder
-define( 'APP_CACHE',        APP_ROOT.'.cache/'              );
+define( 'APP_CACHE',        APP_ROOT.'.cache'.SLASH );
 // width (in px) of image previews
-define( 'APP_PREVIEW_SIZE', 640                             );
+define( 'APP_PREVIEW_SIZE', 640  );
 
 // <uk3.php.net/manual/en/function.is-dir.php#70005>
 chdir( APP_ROOT );
@@ -295,13 +298,13 @@ class BaseTemplate
     public string $canonical_url = '';  // canonical URL of page
     public string $path = '';           // canonical path (i.e. OS slashes)
     public string $title = '';          // page title (optional)
-    public string $content = '';        // page content (HTML string)
+    public ?string $content;            // page content (HTML string)
 
     public function __construct(
         string $template_name
     ){
         parent::__construct( file_get_contents(
-            APP_SYSTEM.'templates'.DIRECTORY_SEPARATOR.$template_name
+            APP_SYSTEM.'templates'.SLASH.$template_name
         ));
     }
 
@@ -367,7 +370,7 @@ class BaseTemplate
 
         // page content:
         //----------------------------------------------------------------------
-        $this->append( 'article', $this->content );
+        if(isset( $this->content )) $this->append( 'article', $this->content );
 
         // page footer:
         //----------------------------------------------------------------------
