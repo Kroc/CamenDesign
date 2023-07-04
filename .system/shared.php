@@ -645,11 +645,16 @@ function errorPage (
 function errorPageHTTP (int $http_code): void {
     // send the error code to the browser
     header( ' ', true, $http_code );
+
     // generate the error page
-    $html = templatePage(
-        reMarkable( template_load( "errors/$http_code.rem" )), (string) $http_code,
-        templateHeader(), templateFooter( ".system/design/templates/errors/$http_code" )
+    $template = new BaseTemplate( 'page.html' );
+    $template->title = (string) $http_code;
+    $template->canonical_url = '404';
+    $template->content = reMarkable(
+        file_get_contents( APP_SYSTEM.'templates'.SLASH.$http_code.'.rem' )
     );
+    $html = (string) $template;
+
     // cache it
     file_put_contents( APP_CACHE."$http_code.html", $html, LOCK_EX ) or errorPage(
         'denied_cache.rem', 'Error: Permission Denied', ['PATH' => APP_CACHE]
